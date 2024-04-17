@@ -1,25 +1,19 @@
-import logo from './logo.svg';
-import './App.css';
+/* eslint-disable import/no-extraneous-dependencies */
+import { Router } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import Header from './components/Header/index';
+import { EstilosGlobal } from './styles/EstilosGlobal';
+import Routes from './routers/index';
+import history from './services/history';
 
-function App() {
+export default function App() {
+  // eslint-disable-next-line jsx-a11y/anchor-is-valid
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router history={history}>
+      <Header />
+      <Routes />
+      <EstilosGlobal />
+      <ToastContainer autoClose={4000} className="toast-container" />
+    </Router>
   );
 }
-
-export default App;
