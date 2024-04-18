@@ -1,22 +1,24 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react';
+import { useDispatch } from 'react-redux';
+
 import { Container } from '../../styles/EstilosGlobal';
 import { Titulo } from './styled';
-
-import axios from '../../services/axios';
+import * as exampleActions from '../../store/modules/exemple/actions';
 
 export default function Login() {
-  React.useEffect(async () => {
-    async function getData() {
-      const response = await axios.get('/alunos');
-      const { data } = await response;
-      getData();
-    }
-  }, []);
+  const dispatch = useDispatch();
+
+  function handleClick(e) {
+    e.preventDefault(); // Parar o evento padrão
+    dispatch(exampleActions.default());
+  }
+
   return (
     <Container>
       <Titulo>Login</Titulo>
+      <button type="button" onClick={handleClick}>
+        Enviar
+      </button>
     </Container>
   );
 }

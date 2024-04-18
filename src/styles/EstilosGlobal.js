@@ -30,6 +30,14 @@ export const EstilosGlobal = createGlobalStyle`
     border-radius: 4px;
   }
 
+  button:hover {
+    background-color: #8d032d;
+  }
+
+  button:active {
+    background-color: #5c011d;
+  }
+
   a {
     text-decoration: none;
   }
