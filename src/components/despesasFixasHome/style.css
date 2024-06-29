@@ -1,0 +1,41 @@
+.box-despesas table {
+  width: 100%;
+  justify-content: center;
+  text-align: center;
+}
+
+
+.bx.bx-chevron-down {
+  font-size: 30px;
+}
+
+.bxs-trash {
+  color: red;
+  font-size: 20px;
+}
+
+.bx-pencil {
+  font-size: 20px;
+  color: rgb(0, 104, 189);
+}
+
+.bx-check {
+  font-size: 23px;
+  color: rgb(0, 168, 0);
+}
+
+.dropdown-content {
+  width: 120px;
+  text-align: center;
+}
+
+.box-despesas  .grid .col:nth-child(1){
+  display: flex;
+  justify-content: space-between;
+}
+
+.box-despesas .grid .col:nth-child(1) .bxs-file-plus {
+  font-size: 23px;
+  position: relative;
+  left: -5px;
+}

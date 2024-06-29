@@ -1,7 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import styled, { createGlobalStyle } from 'styled-components';
 
-import * as colors from '../config/colors';
 
 // eslint-disable-next-line import/prefer-default-export
 export const EstilosGlobal = createGlobalStyle`
@@ -10,34 +9,32 @@ export const EstilosGlobal = createGlobalStyle`
     padding: 0;
     outline: none;
     box-sizing: border-box;
+    pointer-events: auto;
   }
 
   body {
     font-family: 'sans-serif';
-    background-color: ${colors.primaryDarkColor};
   }
 
-  html, border-style, #root {
+   .pages_content {
+    position: absolute;
     height: 100%;
+    width: calc(100% - 120px);
+    left: 100px;
+    margin-top: 1%;
+    transition: all 0.45s ease;
+    overflow: auto;
   }
 
-  button {
-    cursor: pointer;
-    background-color: ${colors.primaryColor};
-    border: none;
-    color: #fff;
-    padding: 10px 20px;
-    border-radius: 4px;
+  .pages_content h1 {
+    text-align: center;
+    font-size: 35px;
   }
 
-  a {
-    text-decoration: none;
+  .sidebar.active ~ .pages_content {
+    width: calc(100% - 270px);
+    left: 250px
   }
-
-  ul {
-    list-style: none;
-  }
-
 
 
 `;
@@ -48,4 +45,5 @@ export const Container = styled.div`
   margin: 30px auto;
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+
 `;

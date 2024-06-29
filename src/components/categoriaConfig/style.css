@@ -1,0 +1,79 @@
+.box.cadastroCateg {
+  display: block;
+  flex-direction: column;
+  line-height: 40px;
+}
+
+.box.cadastroCateg label:nth-child(1) {
+  text-align: center;
+  font-size: 25px;
+}
+
+.cadastroCateg {
+  position: absolute;
+  left: 55%;
+  top: 18%;
+  border-radius: 12px;
+  height: auto;
+  width: 550px;
+  line-height: 35px;
+  justify-content: space-between;
+  transition: all 0.8s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.cadastroCateg.active {
+  opacity: 1;
+  z-index: 5;
+  margin-top: 15px;
+  pointer-events: all;
+}
+
+.btnOptionCategorias {
+  position: absolute;
+  margin-top: -50px;
+  left: 52%;
+  opacity: 0;
+  transition: all 0.8s ease;
+  pointer-events: none;
+}
+
+.btnOptionCategorias.active {
+  margin-top: 0;
+  opacity: 1;
+  pointer-events: all;
+}
+
+.box.listaCategoria label:nth-child(1) {
+  text-align: center;
+  font-size: 25px;
+}
+
+.listaCategoria {
+  position: absolute;
+  left: 55%;
+  top: 18%;
+  border-radius: 12px;
+  height: auto;
+  width: 550px;
+  line-height: 35px;
+  justify-content: center;
+  text-align: center;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  transition: all 0.8s ease;
+  overflow: auto;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.listaCategoria.active {
+  opacity: 1;
+  margin-top: 15px;
+  z-index: 5;
+  pointer-events: all;
+}
+
+.box.cadastroCateg button {
+  margin-top: 2%;
+}

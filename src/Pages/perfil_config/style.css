@@ -1,0 +1,28 @@
+.config_perfil .grid {
+  align-items: center;
+  justify-items: center;
+}
+
+.config_perfil form {
+  line-height: 40px;
+}
+
+.config_perfil button {
+  margin-top: 10%;
+}
+
+.config_perfil button i {
+  display: flex;
+  position: relative;
+  left: -5px;
+  font-size: 20px;
+}
+.config_perfil .bxs-user-circle {
+  font-size: 350px;
+}
+
+.info-erro {
+  color: red;
+  position: relative;
+  left: 35px;
+}

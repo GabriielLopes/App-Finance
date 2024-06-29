@@ -11,15 +11,6 @@ export const Btn = styled.div`
   width: 100%;
   height: 100%;
 
-  .container {
-    margin: 0px auto;
-    width: 550px;
-  }
-
-  .container h1 {
-    text-align: center;
-    font-size: 25px;
-  }
   .container-login {
     font-family: 'Josefin Sans', sans-serif;
     font-optical-sizing: auto;
@@ -29,7 +20,8 @@ export const Btn = styled.div`
     flex-direction: column;
     border-radius: 10px;
     padding: 15px;
-    margin: 30% auto;
+    margin: 0 auto;
+    margin-top: 10%;
   }
 
   button {
@@ -38,28 +30,16 @@ export const Btn = styled.div`
     width: 250px;
     border: none;
     color: #fff;
-    display: flex;
     padding: 10px 20px;
     border-radius: 10px;
   }
-  button .arrow {
-    position: relative;
-    margin-top: 1%;
-    margin-left: 15%;
-  }
-
-  button:hover .arrow {
-    transition: 0.5s ease-in-out;
-    margin-left: 70%;
-  }
 
   button:hover {
-    transition: 0.5s ease-in-out;
-    background-color: #001d3d;
+    background-color: #11101D;
   }
 
   button:active {
-    background-color: #11101D;
+    background-color: #001d3d;
   }
 
   input {
@@ -78,5 +58,10 @@ export const Btn = styled.div`
   input:focus {
     transition: 0.3s ease-in-out;
     box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.3);
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 28px;
   }
 `;

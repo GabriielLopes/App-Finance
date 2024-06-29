@@ -1,0 +1,65 @@
+
+.info-home {
+  display: flex;
+  justify-content: space-between;
+}
+
+.info-home p {
+  text-align: justify;
+}
+
+.info-home .label {
+  font-size: 22px;
+}
+
+.info-home i {
+  font-size: 45px;
+}
+
+.bxs-up-arrow-circle {
+  color: rgb(0, 216, 0);
+}
+
+.bxs-down-arrow-circle {
+  color: red;
+}
+
+.info-home:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.detalhes {
+  position: absolute;
+  top: -1000px;
+  transform: translateY(-50%, -50%);
+  border-radius: 12px;
+  height: 35px;
+  width: 440px;
+  background: rgba(255, 255, 255, 0.2);
+  line-height: 35px;
+  text-align: center;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  transition: all 0.8s ease;
+  opacity: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.info-home:hover .detalhes {
+  transform: all 0.5s ease;
+  top: 170px;
+  z-index: 10;
+  opacity: 1;
+}
+
+.detalhes i {
+  font-size: 15px;
+}
+
+.detalhes .bxs-up-arrow {
+  color: rgb(0, 216, 0);
+}
+
+.detalhes .bxs-down-arrow {
+  color: red;
+}
