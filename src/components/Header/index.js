@@ -1,26 +1,23 @@
+/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable import/no-duplicates */
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { FaHome, FaUser, FaSignInAlt } from 'react-icons/fa';
-
+import { FaHome } from 'react-icons/fa';
+import { FaUser } from 'react-icons/fa';
+import { FaSignInAlt } from 'react-icons/fa';
 import { Nav } from './styled';
 
 export default function Header() {
-  const botaoClicado = useSelector(
-    (state) => state.exampleReducer.botaoClicado
-  );
   return (
     <Nav>
-      <Link to="/">
+      <a href="/">
         <FaHome /> Home
-      </Link>
-      <Link to="/Alunos">
+      </a>
+      <a href="Alunos">
         <FaUser /> Alunos
-      </Link>
-      <Link to="/Sair">
+      </a>
+      <a href="Sair">
         <FaSignInAlt /> Sair
-      </Link>
-      {botaoClicado ? 'Clicado' : 'Não Clicado'}
+      </a>
     </Nav>
   );
 }
