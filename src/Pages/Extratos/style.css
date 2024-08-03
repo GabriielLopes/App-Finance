@@ -1,0 +1,45 @@
+.page_extrato i {
+  font-size: 25px;
+}
+
+.page_extrato .bxs-up-arrow {
+  color: rgb(10, 202, 10);
+  font-size: 18px;
+}
+
+.page_extrato .bxs-down-arrow {
+  color: red;
+  font-size: 18px;
+}
+
+.page_extrato .input.descricao {
+  width: 450px;
+  margin-right: 35px;
+}
+
+.page_extrato .div_pesquisa {
+  display: flex;
+}
+
+.page_extrato .div-balanco {
+  justify-content: center;
+  text-align: center;
+}
+
+.page_extrato .div-balanco p strong:nth-child(3) {
+  color: red;
+}
+
+.btnMudarMes {
+  margin-left: 25px;
+  margin-right: 25px;
+}
+
+.page_extrato .bxs-pencil {
+  font-size: 18px;
+}
+
+.page_extrato .bxs-trash {
+  font-size: 18px;
+}
+

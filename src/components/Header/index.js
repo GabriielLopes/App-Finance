@@ -111,8 +111,6 @@ export default function Header() {
     document.querySelector('html').classList = `theme-light`
   }
 
-
-
   return (
     <>
       <Transacao />
@@ -130,7 +128,7 @@ export default function Header() {
           <li> <a href='/planejamentos/'> <i className='bx bxs-directions' /> <span className='links_name'>Planejamentos</span> </a><span className='tooltip'>Planejamentos</span> </li>
           <li > <a href='#' role='button' tabIndex={0} onClick={() => dispatch(actions.novaTransacaoRequest())}> <i className='bx bx-transfer' /><span className='links_name'>Transações</span></a> <span className='tooltip'>Transações</span></li>
           <li> <a href='/editar-perfil/'> <i className='bx bx-user' /><span className='links_name'>Perfil de usuário</span></a> <span className='tooltip'>Perfil</span></li>
-          <li> <a href='/#' onClick={() => dispatch(actionsConfig.editConfigRequest())}> <i className='bx bx-cog' /><span className='links_name'>Configurações</span></a> <span className='tooltip'>Configurações</span></li>
+          <li> <a href='#' onClick={() => dispatch(actionsConfig.editConfigRequest())}> <i className='bx bx-cog' /><span className='links_name'>Configurações</span></a> <span className='tooltip'>Configurações</span></li>
           {modoNoturno ? (
             <li> <a href='#' onClick={() => dispatch(actionsAuth.modoNoturnoSuccess())}> <i className='bx bx-sun' /><span className='links_name'>Modo claro</span></a> <span className='tooltip'>Modo claro</span></li>
           ) : (

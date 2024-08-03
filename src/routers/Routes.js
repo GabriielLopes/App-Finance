@@ -9,6 +9,7 @@ import Configuracoes from '../Pages/Configuracoes/Index';
 import PerfilConfig from '../Pages/perfil_config/Index';
 import Planejamentos from '../Pages/Planejamentos';
 import ContasAPagar from '../Pages/ContasAPagar';
+import Extratos from '../Pages/Extratos';
 
 export default function Routes() {
   return (
@@ -20,6 +21,7 @@ export default function Routes() {
       <MyRoute exact path="/editar-perfil/" component={PerfilConfig} isClosed />
       <MyRoute exact path="/planejamentos/" component={Planejamentos} isClosed />
       <MyRoute exact path="/contas-a-pagar/" component={ContasAPagar} isClosed />
+      <MyRoute exact path="/extratos/" component={Extratos} isClosed />
       <MyRoute path="*" component={Page404} />
     </Switch>
   );

@@ -79,13 +79,13 @@ export default function Home() {
                 setTotalReceitas(0)
               } else {
                 // eslint-disable-next-line no-return-assign, no-param-reassign
-                setTotalReceitas(responseTransacoes.data.filter((transacao) => transacao.tipo === 'Receita').filter((transacao) => new Date(transacao.data).getUTCMonth() +1 === mes).map((transacao) => parseFloat(transacao.valor)).reduce((acumulador, valores) => acumulador += valores, 0))
+                setTotalReceitas(responseTransacoes.data.filter((transacao) => transacao.tipo === 'Receita').filter((transacao) => new Date(transacao.data).getUTCMonth() + 1 === mes).map((transacao) => parseFloat(transacao.valor)).reduce((acumulador, valores) => acumulador += valores, 0))
               }
               if (responseTransacoes.data.filter((transacao) => transacao.tipo === 'Despesa') <= 0) {
                 setTotalDespesas(0);
               } else {
                 // eslint-disable-next-line no-return-assign, no-param-reassign
-                setTotalDespesas(responseTransacoes.data.filter((transacao) => transacao.tipo === 'Despesa').filter((transacao) => new Date(transacao.data).getUTCMonth() +1 === mes).map((transacao) => parseFloat(transacao.valor)).reduce((acumulador, valores) => acumulador += valores, 0))
+                setTotalDespesas(responseTransacoes.data.filter((transacao) => transacao.tipo === 'Despesa').filter((transacao) => new Date(transacao.data).getUTCMonth() + 1 === mes).map((transacao) => parseFloat(transacao.valor)).reduce((acumulador, valores) => acumulador += valores, 0))
 
               }
             }
@@ -135,126 +135,133 @@ export default function Home() {
 
           <div className='col'>
             {verSaldo ? (
-              <div className='box info-home info-saldo'>
-                <p className='p'>Saldo: <br />
-                  <p className='label'>
-                    {formatarValor.format(saldo)}
+              <a href="/extratos/">
+                <div className='box info-home info-saldo'>
+                  <p className='p'>Saldo: <br />
+                    <p className='label'>
+                      {formatarValor.format(saldo)}
+                    </p>
                   </p>
-                </p>
-                <i className='bx bxs-bank' />
-                <div className='detalhes'>
-                  <div className='box'>
-                    {transacoes.filter((transacao) => new Date(transacao.data).getUTCMonth() + 1 === mes && new Date(transacao.data).getUTCFullYear() === ano).length > 0 ? (
-                      <table className='table is-hoverable is-fullwidth'>
-                        <thead>
-                          <tr>
-                            <td>Descricao:</td>
-                            <td>Data:</td>
-                            <td>Valor:</td>
-                            <td />
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {transacoes.slice(0, 2).filter((transacao) => new Date(transacao.data).getUTCMonth() + 1 === mes && new Date(transacao.data).getUTCFullYear() === ano).map((transacao) => (
+                  <i className='bx bxs-bank' />
+                  <div className='detalhes'>
+                    <div className='box'>
+                      {transacoes.filter((transacao) => new Date(transacao.data).getUTCMonth() + 1 === mes && new Date(transacao.data).getUTCFullYear() === ano).length > 0 ? (
+                        <table className='table is-hoverable is-fullwidth'>
+                          <thead>
                             <tr>
-                              <td>{transacao.descricao}</td>
-                              <td>{formatarData.format(new Date(`${new Date(transacao.data).getFullYear()}-${new Date(transacao.data).getUTCMonth()+1}-${new Date(transacao.data).getUTCDate()}`))}</td>
-                              <td>{formatarValor.format(transacao.valor)}</td>
-                              <td>{transacao.tipo === 'Receita' ? (<i className='bx bxs-up-arrow' />) : (<i className='bx bxs-down-arrow' />)}</td>
+                              <td>Descricao:</td>
+                              <td>Data:</td>
+                              <td>Valor:</td>
+                              <td />
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    ) : (
-                      "Não há movimentações no mês para exibir"
-                    )}
+                          </thead>
+                          <tbody>
+                            {transacoes.slice(0, 2).filter((transacao) => new Date(transacao.data).getUTCMonth() + 1 === mes && new Date(transacao.data).getUTCFullYear() === ano).map((transacao) => (
+                              <tr>
+                                <td>{transacao.descricao}</td>
+                                <td>{formatarData.format(new Date(`${new Date(transacao.data).getFullYear()}-${new Date(transacao.data).getUTCMonth() + 1}-${new Date(transacao.data).getUTCDate()}`))}</td>
+                                <td>{formatarValor.format(transacao.valor)}</td>
+                                <td>{transacao.tipo === 'Receita' ? (<i className='bx bxs-up-arrow' />) : (<i className='bx bxs-down-arrow' />)}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      ) : (
+                        "Não há movimentações no mês para exibir"
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
+              </a>
+
             ) : ""}
           </div>
 
 
           <div className='col'>
             {verTotalReceitas ? (
-              <div className='box info-home info-receitas'>
-                <p className='p'>Receitas: <br />
-                  <p className='label'>
-                    {formatarValor.format(totalReceitas)}
+              <a href="/extratos/">
+                <div className='box info-home info-receitas'>
+                  <p className='p'>Receitas: <br />
+                    <p className='label'>
+                      {formatarValor.format(totalReceitas)}
+                    </p>
                   </p>
-                </p>
-                <i className='bx bxs-up-arrow-circle' />
-                <div className='detalhes'>
-                  <div className='box'>
-                    {transacoes.filter((transacao) => transacao.tipo === 'Receita' && new Date(transacao.data).getUTCMonth() + 1 === mes && new Date(transacao.data).getUTCFullYear() === ano).length > 0 ? (
-                      <table className='table is-hoverable is-fullwidth'>
-                        <thead>
-                          <tr>
-                            <td>Descricao:</td>
-                            <td>Data:</td>
-                            <td>Valor:</td>
-                            <td />
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {transacoes.filter((transacao) => transacao.tipo === 'Receita' && new Date(transacao.data).getUTCMonth() + 1 === mes && new Date(transacao.data)).filter((transacao) => new Date(transacao.data).getUTCFullYear() === ano).slice(0, 2).map((transacao) => (
+                  <i className='bx bxs-up-arrow-circle' />
+                  <div className='detalhes'>
+                    <div className='box'>
+                      {transacoes.filter((transacao) => transacao.tipo === 'Receita' && new Date(transacao.data).getUTCMonth() + 1 === mes && new Date(transacao.data).getUTCFullYear() === ano).length > 0 ? (
+                        <table className='table is-hoverable is-fullwidth'>
+                          <thead>
                             <tr>
-                              <td>{transacao.descricao}</td>
-                              <td>{formatarData.format(new Date(`${new Date(transacao.data).getFullYear()}-${new Date(transacao.data).getUTCMonth() + 1}-${new Date(transacao.data).getUTCDate()}`))}</td>
-                              <td>{formatarValor.format(transacao.valor)}</td>
-                              <td>{transacao.tipo === 'Receita' ? (<i className='bx bxs-up-arrow' />) : (<i className='bx bxs-down-arrow' />)}</td>
+                              <td>Descricao:</td>
+                              <td>Data:</td>
+                              <td>Valor:</td>
+                              <td />
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                          </thead>
+                          <tbody>
+                            {transacoes.filter((transacao) => transacao.tipo === 'Receita' && new Date(transacao.data).getUTCMonth() + 1 === mes && new Date(transacao.data)).filter((transacao) => new Date(transacao.data).getUTCFullYear() === ano).slice(0, 2).map((transacao) => (
+                              <tr>
+                                <td>{transacao.descricao}</td>
+                                <td>{formatarData.format(new Date(`${new Date(transacao.data).getFullYear()}-${new Date(transacao.data).getUTCMonth() + 1}-${new Date(transacao.data).getUTCDate()}`))}</td>
+                                <td>{formatarValor.format(transacao.valor)}</td>
+                                <td>{transacao.tipo === 'Receita' ? (<i className='bx bxs-up-arrow' />) : (<i className='bx bxs-down-arrow' />)}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
 
-                    ) : (
-                      "Ainda não há receitas nesse mês"
-                    )}
+                      ) : (
+                        "Ainda não há receitas nesse mês"
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
+              </a>
             ) : ""}
           </div>
 
           <div className='col'>
             {verTotalDespesas ? (
-              <div className='box info-home info-despesas'>
-                <p className='p'>Despesas: <br />
-                  <p className='label'>
-                    {formatarValor.format(totalDespesas)}
+              <a href="/extratos/">
+                <div className='box info-home info-despesas'>
+                  <p className='p'>Despesas: <br />
+                    <p className='label'>
+                      {formatarValor.format(totalDespesas)}
+                    </p>
                   </p>
-                </p>
-                <i className='bx bxs-down-arrow-circle' />
-                <div className='detalhes'>
-                  <div className='box'>
-                    {transacoes.filter((transacao) => transacao.tipo === 'Despesa' && new Date(transacao.data).getUTCMonth() + 1 === mes && new Date(transacao.data).getUTCFullYear() === ano).length > 0 ? (
-                      <table className='table is-hoverable is-fullwidth'>
-                        <thead>
-                          <tr>
-                            <td>Descricao:</td>
-                            <td>Data:</td>
-                            <td>Valor:</td>
-                            <td />
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {transacoes.filter((transacao) => transacao.tipo === 'Despesa' && new Date(transacao.data).getUTCMonth() + 1 === mes && new Date(transacao.data)).filter((transacao) => new Date(transacao.data).getUTCFullYear() === ano).slice(0, 2).map((transacao) => (
+                  <i className='bx bxs-down-arrow-circle' />
+                  <div className='detalhes'>
+                    <div className='box'>
+                      {transacoes.filter((transacao) => transacao.tipo === 'Despesa' && new Date(transacao.data).getUTCMonth() + 1 === mes && new Date(transacao.data).getUTCFullYear() === ano).length > 0 ? (
+                        <table className='table is-hoverable is-fullwidth'>
+                          <thead>
                             <tr>
-                              <td>{transacao.descricao}</td>
-                              <td>{formatarData.format(new Date(`${new Date(transacao.data).getFullYear()}-${new Date(transacao.data).getUTCMonth() + 1}-${new Date(transacao.data).getUTCDate()}`))}</td>
-                              <td>{formatarValor.format(transacao.valor)}</td>
-                              <td>{transacao.tipo === 'Receita' ? (<i className='bx bxs-up-arrow' />) : (<i className='bx bxs-down-arrow' />)}</td>
+                              <td>Descricao:</td>
+                              <td>Data:</td>
+                              <td>Valor:</td>
+                              <td />
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    ) : (
-                      "Ainda não há despesas nesse mês"
-                    )}
+                          </thead>
+                          <tbody>
+                            {transacoes.filter((transacao) => transacao.tipo === 'Despesa' && new Date(transacao.data).getUTCMonth() + 1 === mes && new Date(transacao.data)).filter((transacao) => new Date(transacao.data).getUTCFullYear() === ano).slice(0, 2).map((transacao) => (
+                              <tr>
+                                <td>{transacao.descricao}</td>
+                                <td>{formatarData.format(new Date(`${new Date(transacao.data).getFullYear()}-${new Date(transacao.data).getUTCMonth() + 1}-${new Date(transacao.data).getUTCDate()}`))}</td>
+                                <td>{formatarValor.format(transacao.valor)}</td>
+                                <td>{transacao.tipo === 'Receita' ? (<i className='bx bxs-up-arrow' />) : (<i className='bx bxs-down-arrow' />)}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      ) : (
+                        "Ainda não há despesas nesse mês"
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
+              </a>
             ) : ""}
           </div>
         </div>
