@@ -3,15 +3,17 @@
   position: fixed;
   width: 100%;
   height: 100%;
-  top: -250%;
+  top: 0;
   left: 0;
-  z-index: 0;
+  z-index: -1;
   align-items: center;
   text-align: center;
   justify-content: center;
   background-color: rgba(0, 0, 0, 0.4);
   bottom: 0;
   opacity: 0;
+  overflow: auto;
+  transition: all 0.8s ease-in-out;
 }
 
 .fundo_despesa.active {
@@ -25,7 +27,7 @@
   left: 35%;
   top: -100%;
   height: auto;
-  width: 550px;
+  width: 700px;
   border-radius: 12px;
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
   line-height: 35px;
@@ -49,8 +51,69 @@
 .cadastroDespesasFixas.active {
   opacity: 1;
   left: 35%;
-  top: 5%;
+  top: 0;
   pointer-events: all;
   z-index: 5;
 }
 
+.cadastroDespesasFixas .select-categoria {
+  width: 240px;
+}
+.cadastroDespesasFixas i {
+  font-size: 25px;
+}
+
+.cadastroDespesasFixas .icon-valor {
+  font-size: 20px;
+}
+
+.cadastroDespesasFixas .data {
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  font-family: "Roboto", sans-serif;
+  font-style: bold 900;
+  font-size: 20px;
+  color: rgb(46, 46, 46);
+  border-bottom: 1px solid rgba(56, 240, 0, 0.6);
+  transition: all 0.1s ease-in-out;
+  padding: 25px 10px 10px;
+}
+
+.cadastroDespesasFixas .data:hover {
+  border-bottom: 3px solid rgba(43, 175, 3, 0.6);
+}
+
+.cadastroDespesasFixas .data button {
+  left: 20px;
+  width: 90px;
+}
+
+.cadastroDespesasFixas .data i {
+  margin-top: 35px;
+  font-size: 30px;
+}
+
+.cadastroDespesasFixas .data .inputdate {
+  padding: 9px 12px;
+  border-radius: 13px;
+  background-color: #00daa3;
+  font-family: "Roboto", sans-serif;
+  margin-top: 30px;
+}
+
+.cadastroDespesasFixas .select-venc {
+  background-color: #7effdf;
+  border-radius: 13px;
+  text-align: center;
+  width: auto;
+}
+
+.cadastroDespesasFixas .notification {
+  position: absolute;
+  width: 300px;
+}
+
+.cadastroDespesasFixas .notification .content {
+  font-size: 14px;
+}

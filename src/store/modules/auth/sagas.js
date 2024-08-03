@@ -17,16 +17,19 @@ function* loginRequest({ payload }) {
   try {
     // Faz a requisição POST para '/tokens/' usando o Axios
     const response = yield call(axios.post, '/tokens/', payload);
+
     // Dispara a ação de login bem-sucedido passando os dados da resposta
-    yield put(actions.loginSuccess({ ...response.data }));
+
+    axios.defaults.headers.get.Authorization = `Bearer ${response.data.token}`
     axios.defaults.headers.common.Authorization = `Bearer ${response.data.token}`;
     axios.defaults.headers.post.Authorization = `Bearer ${response.data.token}`;
     axios.defaults.headers.get.Authorization = `Bearer ${response.data.token}`;
     axios.defaults.headers.delete.Authorization = `Bearer ${response.data.token}`;
     axios.defaults.headers.put.Authorization = `Bearer ${response.data.token}`;
 
-    // Configura o popup de sucesso do SweetAlert
+    yield put(actions.loginSuccess({ ...response.data }));
 
+    // Configura o popup de sucesso do SweetAlert
     Swal.fire({
       icon: 'success',
       title: 'Login efetuado com sucesso!',
@@ -35,7 +38,6 @@ function* loginRequest({ payload }) {
     history.push(payload.prevPath);
   } catch (e) {
     // Configura o popup de erro do SweetAlert
-
     Swal.fire({
       icon: 'error',
       title: 'Usuário ou senha inválidos!',

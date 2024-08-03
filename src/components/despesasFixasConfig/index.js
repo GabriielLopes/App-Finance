@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable consistent-return */
 /* eslint-disable camelcase */
 import React, { useEffect, useState } from "react";
@@ -22,16 +23,21 @@ export default function DespesasFixasConfig() {
   const [nome, setNome] = useState('');
   const [valor, setValor] = useState(0);
   const [data_compra, setData_compra] = useState('');
-  const [data_venc, setData_venc] = useState('');
+  const [data_venc, setData_venc] = useState(1);
   const [parcelado, setParcelado] = useState('Não');
   const [qtde_parcelas, setQtde_parcelas] = useState(1);
   const [categorias, setCategorias] = useState([]);
-  const [categoria_id, setCategoria_id] = useState([]);
-  const [erro, setErro] = useState(false);
+  const [categoria_id, setCategoria_id] = useState(0);
   const [isLoading, setIsloading] = useState(false);
+  const [outraData, setOutraData] = useState(false);
 
 
+  const dia = new Date().getDate()
+  const mes = new Date().getMonth() + 1;
+  const mesFormatado = mes.toString().padStart(2, '0');
+  const ano = new Date().getFullYear();
 
+  const dataAtual = `${ano}-${mesFormatado}-${dia}`
 
   const hasSymbols = (string) => {
     const regex = /[!"#$%&'()*+,-./:;<=>?@^_{|}~]/;
@@ -61,7 +67,7 @@ export default function DespesasFixasConfig() {
           }
           const responseCategorias = await axios.get(`/categorias/`);
           setCategorias(responseCategorias.data);
-          return setConta_id(responseConta.data.id)
+          return setConta_id(responseConta.data[0].id)
         }
       }
       getData()
@@ -75,82 +81,6 @@ export default function DespesasFixasConfig() {
   }
 
 
-  function validaNome() {
-
-    if (nome.length <= 0 || nome === '') {
-      Swal.fire({
-        icon: 'error',
-        title: 'ERRO!',
-        text: 'O nome não pode ficar vazio!'
-      })
-      return setErro(true)
-    }
-
-    if (nome.length >= 25) {
-      Swal.fire({
-        icon: 'error',
-        title: 'ERRO!',
-        text: 'O nome deve ter no máximo 25 caracteres!'
-      })
-      return setErro(true)
-    }
-
-    if (hasSymbols(nome)) {
-      Swal.fire({
-        icon: 'error',
-        title: 'ERRO!',
-        text: 'O nome não pode ter símbolos',
-      })
-      return setErro(true)
-    }
-    setErro(false)
-    return erro;
-  }
-
-  function validaData() {
-    if (data_compra.length <= 0 || data_compra === '') {
-      Swal.fire({
-        icon: 'error',
-        title: 'ERRO!',
-        text: 'O campo "Data de compra", não pode ficar vazio!',
-      })
-      return setErro(true)
-    }
-
-    if (data_venc.length <= 0) {
-      Swal.fire({
-        icon: 'error',
-        title: 'ERRO!',
-        text: 'O campo "Vencimento da fatura", não pode ficar vazio!',
-      })
-      return setErro(true)
-    }
-
-    if (data_venc < data_compra) {
-      Swal.fire({
-        icon: 'error',
-        title: 'ERRO!',
-        text: 'O vencimento da fatura não pode ser inferior a data de compra.',
-      })
-      return setErro(true)
-    }
-    setErro(false);
-    return erro;
-  }
-
-  function validaValor() {
-    if (valor === 0) {
-      Swal.fire({
-        icon: 'error',
-        title: 'ERRO!',
-        text: 'O valor não pode ser igual a "R$ 0,00"',
-      })
-      return setErro(true)
-    }
-    setErro(false);
-    return erro;
-  }
-
   function resetarForm() {
     setNome('');
     setValor(0);
@@ -160,51 +90,108 @@ export default function DespesasFixasConfig() {
     setQtde_parcelas(1);
   }
 
-
   async function onSubmit(e) {
     e.preventDefault();
 
-    validaNome();
-    validaData();
-    validaValor();
+    if (nome.length <= 0 || nome === '') {
+      return Swal.fire({
+        icon: 'warning',
+        title: 'Oops!',
+        text: 'Você precisa informar a descrição da despesa!'
+      })
 
-    if (erro === false) {
-      try {
-        setIsloading(true);
-        await axios.post('/gastos-fixos/', {
-          nome,
-          valor,
-          data_compra,
-          data_venc,
-          qtde_parcelas,
-          user_id: user.id,
-          conta_id,
-          categoria_id,
-        })
-        setIsloading(false);
-        Swal.fire({
-          icon: 'success',
-          title: 'SUCESSO!',
-          text: 'A despesa foi criada com sucesso!',
-          showConfirmButton: true,
-        }).then((result) => {
-          if (result.isConfirmed) {
-            resetarForm()
-            history.go('/');
-          }
-        })
-      } catch (error) {
-        setIsloading(false);
-        Swal.fire({
-          icon: 'error',
-          title: 'ERRO!',
-          text: erro.response,
-        })
-        console.log(erro)
-      }
+    }
+
+    if (nome.length >= 25) {
+      return Swal.fire({
+        icon: 'warning',
+        title: 'Oops!',
+        text: 'A descrição deve ter no máximo 25 caracteres!'
+      })
+    }
+
+    if (hasSymbols(nome)) {
+      return Swal.fire({
+        icon: 'warning',
+        title: 'Oops!',
+        text: 'Não pode ter símbolos na descrição',
+      })
+    }
+
+    if (valor === 0) {
+      return Swal.fire({
+        icon: 'warning',
+        title: 'Oops!',
+        text: 'O valor não pode ser igual a "R$ 0,00"',
+      })
+    }
+
+    if (data_compra.length <= 0 || data_compra === '') {
+      return Swal.fire({
+        icon: 'warning',
+        title: 'Oops!',
+        text: 'Você precisa informar a data de compra!',
+      })
+    }
+
+    if (data_venc.length <= 0) {
+      return Swal.fire({
+        icon: 'warning',
+        title: 'Oops!',
+        text: 'Você precisa informar o dia de vencimento',
+      })
+    }
+
+    if (data_venc < data_compra) {
+      return Swal.fire({
+        icon: 'warning',
+        title: 'Oops!',
+        text: 'O vencimento da fatura não pode ser inferior a data de compra.',
+      })
+    }
+
+    if (categoria_id === 0 || categoria_id === '') {
+      return Swal.fire({
+        icon: 'warning',
+        title: 'Oops!',
+        text: 'Você precisa informar uma categoria!',
+      })
+    }
+
+    try {
+      setIsloading(true);
+      await axios.post('/gastos-fixos/', {
+        nome,
+        valor,
+        data_compra,
+        data_venc: `${new Date(data_compra).getFullYear()}-${new Date(data_compra).getMonth() + 2}-${data_venc}`,
+        qtde_parcelas,
+        user_id: user.id,
+        conta_id,
+        categoria_id,
+      })
+      setIsloading(false);
+      Swal.fire({
+        icon: 'success',
+        title: 'SUCESSO!',
+        text: 'A despesa foi criada com sucesso!',
+        showConfirmButton: true,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          resetarForm()
+          dispatch(actions.novaDespesaRequest())
+          history.go('/');
+        }
+      })
+    } catch (error) {
+      setIsloading(false);
+      Swal.fire({
+        icon: 'error',
+        title: 'ERRO!',
+        text: error.response.data.errors,
+      })
     }
   }
-
 
   if (novaDespesa) {
     const divFundo = document.querySelector(".fundo_despesa")
@@ -221,62 +208,75 @@ export default function DespesasFixasConfig() {
       divFundo.classList = "fundo_despesa"
     }
   }
+
   return (
     <div className="fundo_despesa">
       <Loading isLoading={isLoading} />
       <div className='box cadastroDespesasFixas'>
+        <h1 className='title'>Adicionar despesa</h1>
+        <hr className="hr" />
+
         <form onSubmit={onSubmit}>
-          <h1 className='title'>Adicionar despesa</h1>
-          <hr className="hr" />
-          <label className='label' htmlFor="nome">
-            Nome:
-            <input type='text' className='input' placeholder='EX: "Celular Samsung"' id="nome" value={nome} onChange={(e) => setNome(e.target.value)} />
-          </label>
-
-          <label className="label" htmlFor="categoria">
-            Categoria:
-            <br />
-            <div className="select">
-              <select className="input" onChange={(e) => setCategoria_id(Number(e.target.value))}>
-                <option value="0">Selecione uma categoria</option>
-                {categorias.map((categoria) => (
-                  <option key={categoria.id} value={categoria.id}>{categoria.nome} / {categoria.descricao}</option>
-                ))}
-              </select>
-            </div>
-          </label>
-
-          <label className='label' htmlFor="valor">
-            Valor da compra:
-            <input hidden />
-            <NumericFormat
-              className="input"
-              value={valor}
-              thousandSeparator="."
-              decimalSeparator=","
-              prefix="R$ "
-              fixedDecimalScale={2}
-              placeholder='Ex: R$ 125,00'
-              allowNegative={false}
-              // eslint-disable-next-line react/jsx-no-bind
-              onValueChange={(e) => setValor(e.floatValue)}
-              id="valor"
-            />
-          </label>
 
           <div className="grid">
+
             <div className="col">
-              <label className="label" htmlFor="data_compra">
-                Data de compra:
-                <input type="date" className="input" id="data_compra" value={data_compra} onChange={(e) => setData_compra(e.target.value)} />
+              <label className='label' htmlFor="nome">
+                Descrição:
+                <p className="control has-icons-left">
+                  <input type='text' className='input descricao' placeholder='EX: "Celular Samsung"' id="nome" value={nome} onChange={(e) => setNome(e.target.value)} />
+                  <span className="icon is-large is-left"><i className='bx bx-message-square' /></span>
+                </p>
               </label>
             </div>
 
             <div className="col">
+              <label className='label' htmlFor="valor">
+                Valor da compra:
+                <input hidden />
+                <p className="control has-icons-left">
+                  <NumericFormat
+                    value={valor}
+                    className="input valor input-salario"
+                    thousandSeparator="."
+                    decimalSeparator=","
+                    decimalScale={2}
+                    fixedDecimalScale
+                    maxLength={15}
+                    allowNegative={false}
+                    onFocus={(e) => e.target.select()}
+                    // eslint-disable-next-line react/jsx-no-bind
+                    onValueChange={(e) => setValor(e.floatValue)}
+                    id="valor"
+                  />
+                  <span className="icon icon-valor is-large is-left">R$</span>
+                </p>
+              </label>
+            </div>
+
+          </div>
+
+          <div className="grid">
+            <div className="data">
+              <label className="label">
+                Data de compra:
+                </label>
+              <label className="label" htmlFor="data_compra">
+                <i className="bx bx-calendar icon" />
+                <button type="button" className={data_compra === dataAtual ? "button is-active" : "button"} onClick={() => setData_compra(dataAtual)}>Hoje</button> <button type="button" className={outraData ? "button is-active" : "button"} onClick={() => setOutraData(true)} >Outro...</button>
+
+                <input type="date" className="inputdate" value={data_compra} hidden={!outraData} onChange={(e) => setData_compra(e.target.value)} />
+
+              </label>
+            </div>
+          </div>
+
+          <div className="grid">
+            <div className="col">
               <label className="label" htmlFor="data_venc">
-                Dia de vencimento da fatura:
+                <i className='bx bx-calendar-exclamation' /> Dia do vencimento: <br />
                 <div className="select">
-                  <select className="input" value={data_venc} onChange={(e) => setData_venc(Number(e.target.value))}>
+                  <select className="input select-venc" value={data_venc} onChange={(e) => setData_venc(Number(e.target.value))}>
                     {listDias.map((numDia) => (
                       <option value={numDia}>{numDia}</option>
                     ))}
@@ -284,36 +284,82 @@ export default function DespesasFixasConfig() {
                 </div>
               </label>
             </div>
+
+            <div className="col">
+              <div className="notification">
+                <i className='bx bx-info-circle' />
+                <br />
+                <div className="content">
+                  <p>Informe o dia de vencimento de sua fatura, para que possamos realizar os cálculos corretamente.</p>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div className="control">
-            <p className="label">Compra parcelada?</p>
-            <label className="radio" htmlFor="parcelado?">
-              <input type="radio" name="parcelado?" id="parcelado?" value="Não" onChange={(e) => setParcelado(e.target.value)} checked={parcelado === 'Não'} />
-              Não
-            </label>
+          <div className="grid">
+            <div className="col">
+              <label className="label" htmlFor="categoria">
+                Categoria:
+                <br />
+                <p className="control has-icons-left">
+                  <select className="input select" onChange={(e) => setCategoria_id(Number(e.target.value))}>
+                    <option value="0">Selecione uma categoria</option>
+                    {categorias.map((categoria) => (
+                      <option key={categoria.id} value={categoria.id}>{categoria.nome}</option>
+                    ))}
+                  </select>
+                  {categoria_id > 0 ? (
+                    <span className="icon icon-categoria is-large is-left"><i className={categorias.filter(categoria => categoria.id === categoria_id)[0].icone} /></span>
+                  ) : ""}
+                </p>
 
-            <label className="radio" htmlFor="parcelado?">
-              <input type="radio" name="parcelado?" id="parcelado?" value="Sim" onChange={(e) => setParcelado(e.target.value)} checked={parcelado === 'Sim'} />
-              Sim
-            </label>
+              </label>
+            </div>
           </div>
 
+          <div className="grid">
+            <div className="col">
+              <div className="control">
+                <p className="label">Compra parcelada?</p>
+                <label className="radio" htmlFor="parcelado?">
+                  <input type="radio" name="parcelado?" id="parcelado?" value="Não" onChange={(e) => setParcelado(e.target.value)} checked={parcelado === 'Não'} />
+                  Não
+                </label>
 
-          <label className='label' htmlFor="qtde_parcelas">
-            Quantidade de parcelas:
-            <div className="select">
-              <select className="input select" value={qtde_parcelas} onChange={(e) => setQtde_parcelas(Number(e.target.value))} disabled={parcelado === 'Não'}>
-                {listQtde_Parcelas.map((numParcela) => (
-                  <option value={numParcela}>{numParcela}</option>
-                ))}
-              </select>
+                <label className="radio" htmlFor="parcelado?">
+                  <input type="radio" name="parcelado?" id="parcelado?" value="Sim" onChange={(e) => setParcelado(e.target.value)} checked={parcelado === 'Sim'} />
+                  Sim
+                </label>
+              </div>
             </div>
 
-          </label>
+            <div className="col">
+              <label className='label' htmlFor="qtde_parcelas">
+                Quantidade de parcelas:
+                <br />
+                <div className="select">
+                  <select className="input select-venc" value={qtde_parcelas} onChange={(e) => setQtde_parcelas(Number(e.target.value))} disabled={parcelado === 'Não'}>
+                    {listQtde_Parcelas.map((numParcela) => (
+                      <option value={numParcela}>{numParcela}</option>
+                    ))}
+                  </select>
+                </div>
 
-          <button type='submit' className='button is-link is-left'><i className='bx bx-check' /> Cadastar</button>
-          <button type='button' className='button is-danger' onClick={() => dispatch(actions.novaDespesaRequest())}><i className='bx bx-x' /> Cancelar</button>
+              </label>
+            </div>
+          </div>
+
+
+          <div className="grid">
+            <div className="col">
+              <button type='button' className='button is-danger' onClick={() => dispatch(actions.novaDespesaRequest())}><i className='bx bx-x' /> Cancelar</button>
+            </div>
+
+            <div className="col">
+              <button type='submit' className='button is-link is-left'><i className='bx bx-check' /> Cadastar</button>
+            </div>
+
+          </div>
         </form>
       </div>
     </div>

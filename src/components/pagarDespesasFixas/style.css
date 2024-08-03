@@ -1,0 +1,81 @@
+.pagarDespesasFixas {
+  display: flex;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.4);
+  bottom: 0;
+  opacity: 0;
+  transition: all 0.8s ease;
+}
+
+.pagarDespesasFixas .pagarDespesasFixasConteudo {
+  display: block;
+  position: relative;
+  top: -1000px;
+  width: 700px;
+  transition: all 0.7s ease;
+}
+
+.pagarDespesasFixas.active {
+  z-index: 30;
+  opacity: 1;
+}
+
+.pagarDespesasFixas.active .box {
+  top: 0;
+}
+
+.valor_parcelas {
+  color: red
+}
+
+.pagarDespesasFixas .data {
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  font-family: "Roboto", sans-serif;
+  font-style: bold 900;
+  font-size: 20px;
+  color: rgb(46, 46, 46);
+  border-bottom: 1px solid rgba(56, 240, 0, 0.6);
+  transition: all 0.1s ease-in-out;
+  padding: 25px 10px 10px;
+  text-align: justify;
+}
+
+.pagarDespesasFixas .data:hover {
+  border-bottom: 3px solid rgba(43, 175, 3, 0.6);
+}
+
+.pagarDespesasFixas .data button {
+  left: 20px;
+  width: 90px;
+  margin-top: 30px;
+}
+
+.pagarDespesasFixas .data i {
+  margin-top: 35px;
+  font-size: 30px;
+}
+
+.pagarDespesasFixas .data .inputdate {
+  padding: 9px 12px;
+  border-radius: 13px;
+  background-color: #00daa3;
+  font-family: "Roboto", sans-serif;
+  margin-top: 28px;
+}
+
+.pagarDespesasFixas .select-venc {
+  background-color: #7effdf;
+  border-radius: 13px;
+  text-align: center;
+  width: auto;
+}

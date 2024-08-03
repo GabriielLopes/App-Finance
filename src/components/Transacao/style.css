@@ -5,19 +5,20 @@
   height: 100%;
   top: 0;
   left: 0;
-  z-index: 0;
+  z-index: -1;
   align-items: center;
   text-align: center;
   justify-content: center;
   background-color: rgba(0, 0, 0, 0.4);
   bottom: 0;
   opacity: 0;
+  transition: all 0.7s ease-in-out;
 }
 
 .transacao.active {
   top: 0;
   opacity: 1;
-  z-index: 10;
+  z-index: 25;
 }
 
 .transacao.active .box-transacao{
@@ -27,7 +28,7 @@
 .box-transacao {
   text-align: justify;
   margin-top: -150%;
-  width: 550px;
+  width: 650px;
   line-height: 40px;
   transition: all 0.7s ease;
 }
@@ -67,4 +68,67 @@
 .titulo-transacao {
   display: flex;
   justify-content: center;
+}
+
+.transacao .control .icon {
+  font-size: 20px;
+}
+
+.box-transacao button {
+  justify-content: space-evenly;
+}
+
+.box-transacao button i {
+  font-size: 25px;
+}
+
+.box-transacao .data {
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  font-family: "Roboto", sans-serif;
+  font-style: bold 900;
+  font-size: 20px;
+  color: rgb(46, 46, 46);
+  border-bottom: 1px solid rgba(56, 240, 0, 0.6);
+  transition: all 0.1s ease-in-out;
+  padding: 25px 25px 10px;
+}
+
+.box-transacao .data:hover {
+  border-bottom: 3px solid rgba(43, 175, 3, 0.6);
+}
+
+.box-transacao .data i {
+  margin-left: -25px;
+  font-size: 22px;
+}
+
+.box-transacao .select-categoria {
+  width: 250px;
+}
+
+.box-transacao .select-categoria span {
+  font-size: 30px;
+}
+
+.inputdate {
+  position: absolute;
+  margin-top: 0px;
+  left: 48%;
+  border: none;
+  background-color: transparent;
+  font-size: 19px;
+  font-family: "Roboto", sans-serif;
+  padding: 9px 12px;
+  border-radius: 13px;
+  background-color: #00daa3;
+}
+
+.box-transacao i {
+  font-size: 25px;
+}
+
+.box-transacao .select {
+  width: 50%;
 }

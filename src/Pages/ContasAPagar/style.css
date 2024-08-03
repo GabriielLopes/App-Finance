@@ -1,0 +1,10 @@
+.tabela-despesas {
+  text-align: center;
+}
+.tabela-despesas i {
+  font-size: 30px;
+}
+
+.tabela-despesas button i {
+  font-size: 18px;
+}

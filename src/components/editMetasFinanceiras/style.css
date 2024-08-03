@@ -1,0 +1,36 @@
+.editMetasFinanceiras {
+  display: flex;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.4);
+  bottom: 0;
+  opacity: 0;
+  transition: all 0.7s ease;
+  overflow: auto;
+}
+
+.editMetasFinanceiras .box {
+  position: absolute;
+  display: block;
+  text-align: justify;
+  top: -1000px;
+  width: 950px;
+  height: auto;
+  transition: all 0.7s ease;
+}
+
+.editMetasFinanceiras.active {
+  z-index: 12;
+  opacity: 1;
+}
+
+.editMetasFinanceiras.active .box {
+  top: 0;
+}

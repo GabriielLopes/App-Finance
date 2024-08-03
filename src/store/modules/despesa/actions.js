@@ -8,3 +8,17 @@ export function novaDespesaRequest(payload) {
     payload,
   };
 }
+
+export function pagarDespesaRequest(payload) {
+  return {
+    type: types.PAGAR_DESPESA_REQUEST,
+    payload,
+  };
+}
+
+export function pagarDespesaFailure(payload) {
+  return {
+    type: types.PAGAR_DESPESA_FAILURE,
+    payload,
+  };
+}

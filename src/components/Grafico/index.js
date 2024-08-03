@@ -1,24 +1,21 @@
+/* eslint-disable no-return-assign */
+/* eslint-disable no-param-reassign */
 /* eslint-disable react/jsx-no-useless-fragment */
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import Chart from "react-google-charts";
-import Swal from "sweetalert2";
+
+import ClipLoader from "react-spinners/ClipLoader";
 
 import './style.css';
 import axios from "../../services/axios";
-import history from "../../services/history";
-import * as actionsAuth from '../../store/modules/auth/actions'
+
 
 export default function Grafico() {
-  const dispatch = useDispatch();
-
   const user = useSelector((state) => state.auth.user);
   const [totalReceitas, setTotalReceitas] = useState(0);
   const [totalDespesas, setTotalDespesas] = useState(0)
-  const [dadosGraf, setDadosGraf] = useState([
-    ['', 'Carregando...'],
-    ['Carregando...', 0]
-  ])
+  const [isLoading, setIsLoading] = useState(false);
 
   const formatarValor = new Intl.NumberFormat('pt-BR', {
     style: 'currency',
@@ -28,76 +25,46 @@ export default function Grafico() {
   const mes = new Date().getMonth() + 1
   const ano = new Date().getFullYear()
 
-  if (user) {
-    try {
-
-      useEffect(() => {
-        async function getData() {
-          const responseConta = await axios.get(`/contas/index/${user.id}`).catch((err) => {
-            if (err.response.status === 401) {
-              dispatch(actionsAuth.loginFailure());
-            }
-          })
-          if (responseConta.data.length > 0) {
-            const responseTransacoes = await axios.get(`/transacoes/all/${responseConta.data[0].id}`)
-            if (responseTransacoes.data <= 0) {
-              setTotalReceitas(0)
-              setTotalDespesas(0)
-              setDadosGraf([
-                ['Financeiro', 'Receitas', 'Despesas'],
-                ['', totalReceitas, totalDespesas]
-              ])
-            } else {
-              if (responseTransacoes.data.filter((transacao) => transacao.tipo === 'Receita' && new Date(transacao.data).getMonth() + 1 === mes && new Date(transacao.data).getFullYear() === ano).length <= 0) {
-                setTotalReceitas(0);
-              } else {
-
-                // eslint-disable-next-line no-return-assign, no-param-reassign
-                setTotalReceitas(responseTransacoes.data.filter((transacao) => transacao.tipo === 'Receita' && new Date(transacao.data).getMonth() + 1 === mes && new Date(transacao.data)).filter((transacao) => new Date(transacao.data).getFullYear() === ano).map((transacao) => parseFloat(transacao.valor)).reduce((acumulador, valores) => acumulador += valores))
-              }
-
-              if (responseTransacoes.data.filter((transacao) => transacao.tipo === 'Despesa') <= 0) {
-                setTotalDespesas(0);
-              } else {
-                // eslint-disable-next-line no-return-assign, no-param-reassign
-                setTotalDespesas(responseTransacoes.data.filter((transacao) => transacao.tipo === 'Despesa' && new Date(transacao.data).getMonth() + 1 === mes && new Date(transacao.data)).filter((transacao) => new Date(transacao.data).getFullYear() === ano).map((transacao) => parseFloat(transacao.valor)).reduce((acumulador, valores) => acumulador += valores))
-              }
-
-              setDadosGraf([
-                ['Financeiro', 'Receitas', 'Despesas'],
-                ['', parseFloat(totalReceitas), parseFloat(totalDespesas)],
-              ])
-            }
-          }
-        }
-        getData()
-      }, [totalReceitas, totalDespesas])
-    } catch (error) {
-
-      const { status } = error.response;
-
-      if (status === 401) {
-
-        dispatch(actionsAuth.loginFailure());
-        Swal.fire({
-          icon: 'error',
-          title: 'Sessão expirada!',
-          text: 'Seu login expirou, faça login novamente para acessar sua conta.'
-        });
-        history.go('/login');
+  useEffect(() => {
+    async function getData() {
+      try {
+        setIsLoading(true);
+        const responseConta = await axios.get(`/contas/index/${user.id}`);
+        const responseTransacoes = await axios.get(`/transacoes/all/${responseConta.data[0].id}`);
+        setTotalReceitas(responseTransacoes.data.filter((transacao) => transacao.tipo === 'Receita').filter((transacao) => new Date(transacao.data).getUTCMonth() +1 === mes).map((transacao) => parseFloat(transacao.valor)).reduce((acumulador, valores) => acumulador += valores, 0))
+        setTotalDespesas(responseTransacoes.data.filter((transacao) => transacao.tipo === 'Despesa').filter((transacao) => new Date(transacao.data).getUTCMonth() +1 === mes).map((transacao) => parseFloat(transacao.valor)).reduce((acumulador, valores) => acumulador += valores, 0))
+        setIsLoading(false);
+      } catch (error) {
+        setIsLoading(false)
+        setTotalReceitas(0);
+        setTotalDespesas(0);
       }
     }
+    getData();
+  }, [totalDespesas, totalReceitas])
+
+  if (isLoading === true) {
+    return (
+      <div className="box">
+        <div className="grid">
+          <div className="col" />
+          <div className="col">
+            <ClipLoader color="#0077b6" size={30} />
+          </div>
+        </div>
+      </div>
+    )
   }
 
   const options = {
-    colors: ["blue", "red"],
+    colors: ["red", "blue"],
     legend: 'none',
     gridLines: {
       horizontal: false,
       vertical: false,
     },
     animation: {
-      duration: 1000,
+      duration: 500,
       easing: "out",
       startup: true,
     },
@@ -119,10 +86,13 @@ export default function Grafico() {
           <div className="col">
             <Chart
               chartType="ColumnChart"
-              data={dadosGraf}
+              data={[
+                ['Balanço mensal', 'Despesas', 'Receitas'],
+                ['', parseFloat(parseFloat(totalDespesas).toFixed(2)), parseFloat(totalReceitas)],
+              ]}
               options={options}
-              width="auto"
-              height="auto"
+              width={300}
+              height={180}
             />
           </div>
           <div className="col">

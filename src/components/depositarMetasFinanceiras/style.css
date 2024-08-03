@@ -1,0 +1,41 @@
+.depoMetasFinanceiras {
+  display: flex;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.4);
+  bottom: 0;
+  opacity: 0;
+  transition: all 0.7s ease;
+}
+
+.conteudo-depo-metas {
+  position: relative;
+  top: -1000px;
+  width: 950px;
+  transition: all 0.7s ease;
+}
+
+.depoMetasFinanceiras.active {
+  z-index: 12;
+  opacity: 1;
+}
+
+.depoMetasFinanceiras.active .box {
+  top: 0;
+}
+
+.depoMetasFinanceiras .data i{
+  font-size: 40px;
+}
+.depoMetasFinanceiras .data input {
+  position: relative;
+  top: 20px;
+  left: 0px;
+}

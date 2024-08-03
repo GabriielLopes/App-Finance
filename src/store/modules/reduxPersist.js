@@ -13,8 +13,8 @@ export default (reducers) => {
       key: 'CONSUMO-API',
       // Define o storage utilizado para persistir os dados (normalmente 'localStorage')
       storage,
-      
-      whitelist: ['auth', 'transacao', 'despesa'],
+
+      whitelist: ['auth', 'transacao', 'despesa', 'editMetasFin', 'planejamentosMensais', 'configuracoes'],
     },
     // Reducers da aplicação passados como argumento
     reducers

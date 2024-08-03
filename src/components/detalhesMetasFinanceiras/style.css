@@ -1,0 +1,79 @@
+.detalhesMetasFinanceiras {
+  display: flex;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  justify-content: space-evenly;
+  background-color: rgba(0, 0, 0, 0.4);
+  bottom: 0;
+  opacity: 0;
+  transition: all 0.8s ease;
+}
+
+.box-fundo-detalhes-metas-financeiras {
+  position: relative;
+  top: -500%;
+  left: 50px;
+  width: 750px;
+  height: 500px;
+  transition: all 0.7s ease;
+}
+
+
+.box-fundo-detalhes-metas-financeiras .tag {
+  justify-content: space-evenly;
+  width: 100%;
+}
+
+.box-fundo-detalhes-metas-financeiras .tag .bx {
+  font-size: 28px;
+}
+
+.detalhesMetasFinanceiras .box:nth-child(2) {
+  top: -800px;
+  width: 650px;
+  height: auto;
+  overflow: auto;
+}
+
+.detalhesMetasFinanceiras.active {
+  z-index: 12;
+  opacity: 1;
+}
+
+.detalhesMetasFinanceiras.active .box {
+  top: 10%;
+}
+
+.detalhesMetasFinanceiras.active .box:nth-child(2) {
+  top: 0;
+}
+
+.detalhesMetasFinanceiras .bx-calendar {
+  font-size: 25px;
+}
+
+.box-extrato-depositos {
+  border-radius: 15px;
+  margin: 15px;
+  box-shadow: 3px 3px 20px rgba(0, 0, 0, 0.4);
+}
+.box-extrato-depositos .col {
+  margin: 20px;
+}
+
+.box-extrato-depositos .bxs-up-arrow-circle {
+  font-size: 25px;
+}
+
+.box-extrato-depositos .bx-filter-alt {
+  margin-left: 15px;
+  font-size: 28px;
+}
+
+.box-extrato-depositos button i {
+  font-size: 25px;
+}

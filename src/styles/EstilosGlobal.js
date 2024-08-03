@@ -19,11 +19,11 @@ export const EstilosGlobal = createGlobalStyle`
    .pages_content {
     position: absolute;
     height: 100%;
-    width: calc(100% - 120px);
+    width: calc(100% - 60px);
     left: 100px;
     margin-top: 1%;
     transition: all 0.45s ease;
-    overflow: auto;
+    overflow: auto
   }
 
   .pages_content h1 {
@@ -35,7 +35,6 @@ export const EstilosGlobal = createGlobalStyle`
     width: calc(100% - 270px);
     left: 250px
   }
-
 
 `;
 

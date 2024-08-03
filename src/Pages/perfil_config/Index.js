@@ -1,5 +1,5 @@
-/* eslint-disable no-param-reassign */
 /* eslint-disable jsx-a11y/label-has-associated-control */
+/* eslint-disable no-param-reassign */
 import React, { useEffect, useState } from 'react';
 import { get } from 'lodash';
 import Swal from 'sweetalert2';
@@ -37,8 +37,6 @@ export default function PerfilConfig() {
     }
     getData()
   }, [])
-
-
 
   const handleFotoChange = async (e) => {
     const foto = e.target.files[0];
@@ -208,7 +206,6 @@ export default function PerfilConfig() {
     }
   }
 
-
   return (
     <div className='pages_content config_perfil'>
       <Loading isLoading={isLoading} />
@@ -232,7 +229,7 @@ export default function PerfilConfig() {
                       <span className="file-icon">
                         <i className='bx bx-upload' />
                       </span>
-                      <span className="file-label"> Alterar foto </span>
+                      <span className="file-label"> Escolher foto </span>
                     </span>
                   </label>
                 </div>

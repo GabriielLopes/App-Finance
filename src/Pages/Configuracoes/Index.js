@@ -2,10 +2,10 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable react/jsx-no-useless-fragment */
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 
 
 import './style.css';
-import { useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
 import CategoriaConfig from '../../components/categoriaConfig';
 import ContaConfig from '../../components/contaConfig';

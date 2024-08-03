@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Chart from "react-google-charts";
 import Swal from "sweetalert2";
+import ClipLoader from "react-spinners/ClipLoader";
 
 import './style.css';
 import axios from "../../services/axios";
@@ -14,15 +15,12 @@ export default function GraficoCategoriaReceita() {
 
   const user = useSelector((state) => state.auth.user);
   const [totalReceitas, setTotalReceitas] = useState(0);
+  const [isLoading, setIsloading] = useState(false);
   const [dadosGraf, setDadosGraf] = useState([
     ['', 'Carregando...'],
     ['Carregando...', 0]
   ])
 
-  /* const formatarValor = new Intl.NumberFormat('pt-BR', {
-     style: 'currency',
-     currency: 'BRL',
-   }) */
 
   const mes = new Date().getMonth() + 1
   const ano = new Date().getFullYear()
@@ -32,6 +30,7 @@ export default function GraficoCategoriaReceita() {
 
       useEffect(() => {
         async function getData() {
+          setIsloading(true);
           const responseConta = await axios.get(`/contas/index/${user.id}`).catch((err) => {
             if (err.response.status === 401) {
               dispatch(actionsAuth.loginFailure());
@@ -57,8 +56,8 @@ export default function GraficoCategoriaReceita() {
                 ])
               } else {
                 // eslint-disable-next-line no-return-assign, no-param-reassign
-                setTotalReceitas(responseTransacoes.data.filter((transacao) => transacao.tipo === 'Receita' && new Date(transacao.data).getMonth() + 1 === mes && new Date(transacao.data)).filter((transacao) => new Date(transacao.data).getFullYear() === ano).map((transacao) => parseFloat(transacao.valor)).reduce((acumulador, valores) => acumulador += valores))
-                const objReceita = responseTransacoes.data.filter((transacao) => transacao.tipo === 'Receita')
+                setTotalReceitas(responseTransacoes.data.filter((transacao) => transacao.tipo === 'Receita').filter((transacao) => new Date(transacao.data).getUTCMonth() +1 === mes).map((transacao) => parseFloat(transacao.valor)).reduce((acumulador, valores) => acumulador += valores, 0))
+                const objReceita = responseTransacoes.data.filter((transacao) => transacao.tipo === 'Receita' && new Date(transacao.data).getUTCMonth() + 1 === mes && new Date(transacao.data)).filter((transacao) => new Date(transacao.data).getFullYear() === ano)
                   .reduce((acumulador, receita) => {
                     const categoria = { categoria_id: receita.categoria_id || 0 };
 
@@ -91,6 +90,7 @@ export default function GraficoCategoriaReceita() {
             }
 
           }
+          setIsloading(false);
         }
         getData()
       }, [])
@@ -110,6 +110,20 @@ export default function GraficoCategoriaReceita() {
       }
     }
   }
+
+  if (isLoading === true) {
+    return (
+      <div className="col">
+        <div className="grid">
+          <div className="col" />
+          <div className="col">
+            <ClipLoader color="#0077b6" size={30} />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   const options = {
     pieSliceTextStyle: {
       color: document.querySelector('.theme-light') ? 'black' : 'white',
@@ -123,7 +137,7 @@ export default function GraficoCategoriaReceita() {
 
   if (totalReceitas === 0) {
     return (
-      <p>Cadastre sua conta e <br />faça movimentações para ver os relatórios!</p>
+      <p>Faça movimentações para visualizar o gráfico corretamente.</p>
     )
   }
 
@@ -133,13 +147,15 @@ export default function GraficoCategoriaReceita() {
       <div className="grid">
         <div className="col">
           RECEITAS POR CATEGORIA
-          <Chart
-            chartType="PieChart"
-            data={dadosGraf}
-            options={options}
-            width="auto"
-            height="auto"
-          />
+          <center>
+            <Chart
+              chartType="PieChart"
+              data={dadosGraf}
+              options={options}
+              width={350}
+              height={180}
+            />
+          </center>
         </div>
       </div>
 

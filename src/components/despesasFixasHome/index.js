@@ -7,12 +7,15 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2";
+import ClipLoader from "react-spinners/ClipLoader";
 
 import axios from "../../services/axios";
 import history from '../../services/history';
 import './style.css';
 import DespesasFixasConfig from "../despesasFixasConfig";
 import * as actions from '../../store/modules/despesa/actions';
+import * as actionsAuth from '../../store/modules/auth/actions';
+import PagarDespesasFixas from "../pagarDespesasFixas";
 
 export default function DespesasFixasHome() {
   const dispatch = useDispatch();
@@ -24,15 +27,21 @@ export default function DespesasFixasHome() {
   const [verTodasDespesas, setVerTodasDespesas] = useState(0)
   const [dropdownStates, setDropdownStates] = useState([]);
   const [conta, setConta] = useState([])
+  const [categorias, setCategorias] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const user = useSelector((state) => state.auth.user);
-  const auth = useSelector((state) => state.auth);
 
-  const ano = new Date().getFullYear();
 
 
   useEffect(() => {
     async function getData() {
-      const responseConta = await axios.get(`/contas/index/${user.id}`)
+      setIsLoading(true)
+      // eslint-disable-next-line consistent-return
+      const responseConta = await axios.get(`/contas/index/${user.id}`).catch((err) => {
+        if (err.response.status === 401) {
+          return dispatch(actionsAuth.loginFailure())
+        }
+      })
       if (responseConta.data.length > 0) {
         setConta(responseConta.data);
         const responseDespesas = await axios.get(`/gastos-fixos/${responseConta.data[0].id}/${user.id}`)
@@ -43,9 +52,38 @@ export default function DespesasFixasHome() {
         setListDespesas(responseDespesas.data.filter((despesa) => despesa.qtde_parcelas_pagas < despesa.qtde_parcelas))
         setDropdownStates(responseDespesas.data.filter((despesa) => despesa.qtde_parcelas_pagas < despesa.qtde_parcelas).map(() => false))
       }
+      setIsLoading(false)
     }
     getData()
   }, [])
+
+  useEffect(() => {
+    async function getData() {
+      try {
+        setIsLoading(true)
+        const response = await axios.get('/categorias/');
+        setCategorias(response.data);
+        setIsLoading(false)
+      } catch (error) {
+        setIsLoading(false);
+        setCategorias([]);
+      }
+    }
+    getData();
+  }, [])
+
+  if (isLoading === true) {
+    return (
+      <div className="box box-despesas">
+        <div className="grid">
+          <div className="col" />
+          <div className="col">
+            <ClipLoader color="#0077b6" size={30} />
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   const formatarValor = new Intl.NumberFormat('pt-BR', {
     style: 'currency',
@@ -58,7 +96,6 @@ export default function DespesasFixasHome() {
     day: 'numeric'
   })
 
-
   function handleChange(e) {
     if (e.target.value === 'Todas') {
       setListDespesas(despesas);
@@ -68,7 +105,6 @@ export default function DespesasFixasHome() {
       setListDespesas(despesasPendentes)
     }
   }
-
 
   function handleChangeDropDown(index) {
 
@@ -87,68 +123,6 @@ export default function DespesasFixasHome() {
         dropdown.classList = 'dropdown'
       }
     }
-  }
-
-
-  async function pagar(id, qtde_parcelas_pagas, data, tipo, descricao, conta_id, valor, categoria_id) {
-    try {
-      axios.defaults.headers.post.Authorization = `Bearer ${auth.token}`;
-      axios.defaults.headers.put.Authorization = `Bearer ${auth.token}`;
-      await axios.put(`/gastos-fixos/${id}`, { qtde_parcelas_pagas })
-      await axios.post('/transacoes/', {
-        data,
-        tipo,
-        descricao,
-        user_id: parseFloat(user.id),
-        conta_id: parseFloat(conta_id),
-        valor,
-        categoria_id,
-      })
-      Swal.fire({
-        icon: 'success',
-        title: 'Sucesso!',
-        text: 'A despesa foi paga com sucesso!',
-        showConfirmButton: true,
-      }).then((result) => {
-        if (result.isConfirmed) {
-          history.go('/')
-        }
-      })
-
-    } catch (error) {
-      Swal.fire({
-        icon: 'error',
-        text: error
-      })
-    }
-  }
-
-  function handlePagar(index, id, qtde_parcelas_atuais, valor_parcela, nome, categoria_id) {
-    handleChangeDropDown(index)
-
-    Swal.fire({
-      title: 'Efetuar pagamento',
-      showCloseButton: true,
-      showCancelButton: true,
-      confirmButtonText: 'Pagar',
-      cancelButtonText: 'Cancelar',
-      cancelButtonColor: 'red',
-      confirmButtonColor: 'green',
-      text: 'Quantas parcelas será paga?',
-      input: 'number',
-    }).then((result) => {
-
-      if (result.isConfirmed) {
-        const tipo = 'Despesa';
-        const descricao = `${nome} - ${result.value} parcelas`;
-        const conta_id = conta[0].id;
-        const valor = Number(valor_parcela) * Number(result.value);
-        const qtde_parcelas_pagas = qtde_parcelas_atuais + Number(result.value);
-
-        pagar(id, qtde_parcelas_pagas, `2024-06-06`, tipo, descricao, conta_id, valor, categoria_id)
-
-      }
-    })
   }
 
   async function deletar(id) {
@@ -171,6 +145,7 @@ export default function DespesasFixasHome() {
       })
     }
   }
+
   function handleDelete(id, index) {
     handleChangeDropDown(index)
     Swal.fire({
@@ -193,21 +168,24 @@ export default function DespesasFixasHome() {
     return (<></>)
   }
 
+
   return (
     <div className="box box-despesas">
       <DespesasFixasConfig />
+      <PagarDespesasFixas />
       <h1 className="">Contas a pagar</h1>
       <div className="grid">
         <div className="col">
-          <label className="label" htmlFor="filtro">
-            <div className="select">
-              <select className="select input" onChange={handleChange}>
-                <option value="Pendentes">Pendentes</option>
-                <option value="Pagas">Pagas</option>
-                <option value="Todas">Todas</option>
-              </select>
-            </div>
-          </label>
+
+          <p className="control has-icons-left">
+            <select className="input" onChange={handleChange}>
+              <option value="Pendentes">Pendentes</option>
+              <option value="Pagas">Pagas</option>
+              <option value="Todas">Todas</option>
+            </select>
+            <span className="icon is-large is-left"><i className='bx bx-filter' /></span>
+          </p>
+
           <button type="button" className="button" onClick={() => dispatch(actions.novaDespesaRequest())}>
             <i className='bx bxs-file-plus' /> Adicionar
           </button>
@@ -234,10 +212,9 @@ export default function DespesasFixasHome() {
                   {listDespesas.slice(0, verTodasDespesas + 3).map((despesa, index) => (
                     <tr>
                       <td>{formatarValor.format(despesa.valor_parcela)}</td>
-                      <td>{despesa.nome}</td>
+                      <td> <i className={categorias.filter(categoria => categoria.id === despesa.categoria_id)[0].icone} /> {despesa.nome}</td>
                       <th>{despesa.qtde_parcelas_pagas} / {despesa.qtde_parcelas}</th>
-                      <th>{formatarData.format(new Date(`${ano}-${new Date(despesa.data_compra).getMonth() + 3 + despesa.qtde_parcelas_pagas}-${despesa.data_venc}`))
-                      }</th>
+                      <th>{formatarData.format(new Date(`${new Date(despesa.data_venc).getFullYear()}-${new Date(despesa.data_venc).getMonth() + 1}-${new Date(despesa.data_venc).getDate() + 1}`))}</th>
                       <th><div className="dropdown is-up" id={index}>
                         <div className="dropdown-trigger">
                           <button className="button" onClick={() => handleChangeDropDown(index)} aria-haspopup="true" aria-controls={`dropdown-menu${index}`}>
@@ -251,14 +228,13 @@ export default function DespesasFixasHome() {
                           <div className="dropdown-content">
                             {despesa.qtde_parcelas_pagas < despesa.qtde_parcelas ? (
                               <a href="#" className="dropdown-item" role="button" tabIndex={0}
-                                onKeyDown={() => handlePagar(index, despesa.id, despesa.qtde_parcelas_pagas, Number(despesa.valor_parcela), despesa.nome, despesa.categoria_id)}
-                                onClick={() => handlePagar(index, despesa.id, despesa.qtde_parcelas_pagas, Number(despesa.valor_parcela), despesa.nome, despesa.categoria_id)}>
+                                onKeyDown={() => dispatch(actions.pagarDespesaRequest({ despesa }))}
+                                onClick={() => dispatch(actions.pagarDespesaRequest({ despesa }))}>
                                 <i className='bx bx-check' />
                                 Pagar
                               </a>
                             ) : ("")}
 
-                            <a href="#" className="dropdown-item"><i className='bx bx-pencil' /> Editar</a>
                             <hr className="dropdown-divider" />
                             <a href="#" className="dropdown-item" role="button" tabIndex={0}
                               onKeyDown={() => handleDelete(despesa.id, index)} onClick={() => handleDelete(despesa.id, index)}>
@@ -271,9 +247,7 @@ export default function DespesasFixasHome() {
                     </tr>
                   ))}
                 </tbody>
-
               </>
-
             )}
           </table>
         </div>
@@ -290,11 +264,8 @@ export default function DespesasFixasHome() {
             ""
           )}
         </div>
-
         <div className="col" />
-
       </div>
-
     </div>
   )
 }

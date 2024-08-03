@@ -1,5 +1,5 @@
-/* eslint-disable no-param-reassign */
 /* eslint-disable no-return-assign */
+/* eslint-disable no-param-reassign */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -15,8 +15,7 @@ import DespesasFixasHome from '../../components/despesasFixasHome';
 import GraficoCategoriaDespesa from '../../components/GraficoCategoriaDespesa';
 import GraficoCategoriaReceita from '../../components/GraficoCategoriaReceita';
 import Footer from '../../components/Footer/index';
-
-
+import AddContaBancaria from '../../components/addContaBancaria';
 
 export default function Home() {
   const dispatch = useDispatch()
@@ -32,6 +31,7 @@ export default function Home() {
   const [verTotalDespesas, setVerTotalDespesas] = useState('');
   const [verTotalReceitas, setVerTotalRecetas] = useState('');
   const [verSaldo, setVerSaldo] = useState('');
+  const [conta, setConta] = useState([]);
   const user = useSelector((state) => state.auth.user);
 
   const formatarValor = new Intl.NumberFormat('pt-BR', {
@@ -65,6 +65,7 @@ export default function Home() {
               });
             }
           })
+          setConta(responseConta.data);
           if (responseConta.data.length > 0) {
             setSaldo(responseConta.data[0].saldo);
             const responseTransacoes = await axios.get(`/transacoes/all/${responseConta.data[0].id}`)
@@ -78,13 +79,14 @@ export default function Home() {
                 setTotalReceitas(0)
               } else {
                 // eslint-disable-next-line no-return-assign, no-param-reassign
-                setTotalReceitas(responseTransacoes.data.filter((transacao) => transacao.tipo === 'Receita' && new Date(transacao.data).getMonth() + 1 === mes && new Date(transacao.data)).filter((transacao) => new Date(transacao.data).getFullYear() === ano).map((transacao) => parseFloat(transacao.valor)).reduce((acumulador, valores) => acumulador += valores))
+                setTotalReceitas(responseTransacoes.data.filter((transacao) => transacao.tipo === 'Receita').filter((transacao) => new Date(transacao.data).getUTCMonth() +1 === mes).map((transacao) => parseFloat(transacao.valor)).reduce((acumulador, valores) => acumulador += valores, 0))
               }
               if (responseTransacoes.data.filter((transacao) => transacao.tipo === 'Despesa') <= 0) {
                 setTotalDespesas(0);
               } else {
                 // eslint-disable-next-line no-return-assign, no-param-reassign
-                setTotalDespesas(responseTransacoes.data.filter((transacao) => transacao.tipo === 'Despesa' && new Date(transacao.data).getMonth() + 1 === mes && new Date(transacao.data)).filter((transacao) => new Date(transacao.data).getFullYear() === ano).map((transacao) => parseFloat(transacao.valor)).reduce((acumulador, valores) => acumulador += valores))
+                setTotalDespesas(responseTransacoes.data.filter((transacao) => transacao.tipo === 'Despesa').filter((transacao) => new Date(transacao.data).getUTCMonth() +1 === mes).map((transacao) => parseFloat(transacao.valor)).reduce((acumulador, valores) => acumulador += valores, 0))
+
               }
             }
 
@@ -115,180 +117,181 @@ export default function Home() {
     }
   }
 
+  if (isLoading) {
+    return <Loading isLoading={isLoading} />
+  }
+
+  if (conta.length <= 0 || conta === "") {
+    return <AddContaBancaria />
+  }
+
   return (
     // eslint-disable-next-line react/jsx-no-useless-fragment
     <>
-      {isLoading ? (
-        <Loading isLoading={isLoading} />
-      ) : (
-        <div className="pages_content">
-          <h1 className='title'>DASHBOARD</h1>
+      <div className="pages_content">
+        <h1 className='title'>DASHBOARD <i className='bx bxs-pie-chart-alt-2' /></h1>
+        <hr className='hr' />
+        <div className='grid'>
 
-          <div className='grid'>
-
+          <div className='col'>
             {verSaldo ? (
-              <div className='col'>
-                <div className='box info-home info-saldo'>
-                  <p className='p'>Saldo: <br />
-                    <p className='label'>
-                      {formatarValor.format(saldo)}
-                    </p>
+              <div className='box info-home info-saldo'>
+                <p className='p'>Saldo: <br />
+                  <p className='label'>
+                    {formatarValor.format(saldo)}
                   </p>
-                  <i className='bx bxs-bank' />
-                  <div className='detalhes'>
-                    <div className='box'>
-                      {transacoes.filter((transacao) => new Date(transacao.data).getMonth() + 1 === mes && new Date(transacao.data).getFullYear() === ano).length > 0 ? (
-                        <table className='table is-hoverable is-fullwidth'>
-                          <thead>
+                </p>
+                <i className='bx bxs-bank' />
+                <div className='detalhes'>
+                  <div className='box'>
+                    {transacoes.filter((transacao) => new Date(transacao.data).getUTCMonth() + 1 === mes && new Date(transacao.data).getUTCFullYear() === ano).length > 0 ? (
+                      <table className='table is-hoverable is-fullwidth'>
+                        <thead>
+                          <tr>
+                            <td>Descricao:</td>
+                            <td>Data:</td>
+                            <td>Valor:</td>
+                            <td />
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {transacoes.slice(0, 2).filter((transacao) => new Date(transacao.data).getUTCMonth() + 1 === mes && new Date(transacao.data).getUTCFullYear() === ano).map((transacao) => (
                             <tr>
-                              <td>Descricao:</td>
-                              <td>Data:</td>
-                              <td>Valor:</td>
-                              <td />
+                              <td>{transacao.descricao}</td>
+                              <td>{formatarData.format(new Date(`${new Date(transacao.data).getFullYear()}-${new Date(transacao.data).getUTCMonth()+1}-${new Date(transacao.data).getUTCDate()}`))}</td>
+                              <td>{formatarValor.format(transacao.valor)}</td>
+                              <td>{transacao.tipo === 'Receita' ? (<i className='bx bxs-up-arrow' />) : (<i className='bx bxs-down-arrow' />)}</td>
                             </tr>
-                          </thead>
-                          <tbody>
-                            {transacoes.slice(0, 5).filter((transacao) => new Date(transacao.data).getMonth() + 1 === mes && new Date(transacao.data).getFullYear() === ano).map((transacao) => (
-                              <tr>
-                                <td>{transacao.descricao}</td>
-                                <td>{formatarData.format(new Date(transacao.data))}</td>
-                                <td>{formatarValor.format(transacao.valor)}</td>
-                                <td>{transacao.tipo === 'Receita' ? (<i className='bx bxs-up-arrow' />) : (<i className='bx bxs-down-arrow' />)}</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      ) : (
-                        "Não há movimentações no mês para exibir"
-                      )}
-                    </div>
+                          ))}
+                        </tbody>
+                      </table>
+                    ) : (
+                      "Não há movimentações no mês para exibir"
+                    )}
                   </div>
                 </div>
               </div>
             ) : ""}
+          </div>
 
 
+          <div className='col'>
             {verTotalReceitas ? (
-              <div className='col'>
-                <div className='box info-home info-receitas'>
-                  <p className='p'>Receitas: <br />
-                    <p className='label'>
-                      {formatarValor.format(totalReceitas)}
-                    </p>
+              <div className='box info-home info-receitas'>
+                <p className='p'>Receitas: <br />
+                  <p className='label'>
+                    {formatarValor.format(totalReceitas)}
                   </p>
-                  <i className='bx bxs-up-arrow-circle' />
-                  <div className='detalhes'>
-                    <div className='box'>
-                      {transacoes.filter((transacao) => transacao.tipo === 'Receita' && new Date(transacao.data).getMonth() + 1 === mes && new Date(transacao.data).getFullYear() === ano).length > 0 ? (
-                        <table className='table is-hoverable is-fullwidth'>
-                          <thead>
+                </p>
+                <i className='bx bxs-up-arrow-circle' />
+                <div className='detalhes'>
+                  <div className='box'>
+                    {transacoes.filter((transacao) => transacao.tipo === 'Receita' && new Date(transacao.data).getUTCMonth() + 1 === mes && new Date(transacao.data).getUTCFullYear() === ano).length > 0 ? (
+                      <table className='table is-hoverable is-fullwidth'>
+                        <thead>
+                          <tr>
+                            <td>Descricao:</td>
+                            <td>Data:</td>
+                            <td>Valor:</td>
+                            <td />
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {transacoes.filter((transacao) => transacao.tipo === 'Receita' && new Date(transacao.data).getUTCMonth() + 1 === mes && new Date(transacao.data)).filter((transacao) => new Date(transacao.data).getUTCFullYear() === ano).slice(0, 2).map((transacao) => (
                             <tr>
-                              <td>Descricao:</td>
-                              <td>Data:</td>
-                              <td>Valor:</td>
-                              <td />
+                              <td>{transacao.descricao}</td>
+                              <td>{formatarData.format(new Date(`${new Date(transacao.data).getFullYear()}-${new Date(transacao.data).getUTCMonth() + 1}-${new Date(transacao.data).getUTCDate()}`))}</td>
+                              <td>{formatarValor.format(transacao.valor)}</td>
+                              <td>{transacao.tipo === 'Receita' ? (<i className='bx bxs-up-arrow' />) : (<i className='bx bxs-down-arrow' />)}</td>
                             </tr>
-                          </thead>
-                          <tbody>
-                            {transacoes.filter((transacao) => transacao.tipo === 'Receita' && new Date(transacao.data).getMonth() + 1 === mes && new Date(transacao.data)).filter((transacao) => new Date(transacao.data).getFullYear() === ano).slice(0, 3).map((transacao) => (
-                              <tr>
-                                <td>{transacao.descricao}</td>
-                                <td>{formatarData.format(new Date(transacao.data))}</td>
-                                <td>{formatarValor.format(transacao.valor)}</td>
-                                <td>{transacao.tipo === 'Receita' ? (<i className='bx bxs-up-arrow' />) : (<i className='bx bxs-down-arrow' />)}</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
+                          ))}
+                        </tbody>
+                      </table>
 
-                      ) : (
-                        "Ainda não há receitas nesse mês"
-                      )}
-                    </div>
+                    ) : (
+                      "Ainda não há receitas nesse mês"
+                    )}
                   </div>
                 </div>
               </div>
             ) : ""}
+          </div>
 
+          <div className='col'>
             {verTotalDespesas ? (
-              <div className='col'>
-                <div className='box info-home info-despesas'>
-                  <p className='p'>Despesas: <br />
-                    <p className='label'>
-                      {formatarValor.format(totalDespesas)}
-                    </p>
+              <div className='box info-home info-despesas'>
+                <p className='p'>Despesas: <br />
+                  <p className='label'>
+                    {formatarValor.format(totalDespesas)}
                   </p>
-                  <i className='bx bxs-down-arrow-circle' />
-                  <div className='detalhes'>
-                    <div className='box'>
-                      {transacoes.filter((transacao) => transacao.tipo === 'Despesa' && new Date(transacao.data).getMonth() + 1 === mes && new Date(transacao.data).getFullYear() === ano).length > 0 ? (
-                        <table className='table is-hoverable is-fullwidth'>
-                          <thead>
+                </p>
+                <i className='bx bxs-down-arrow-circle' />
+                <div className='detalhes'>
+                  <div className='box'>
+                    {transacoes.filter((transacao) => transacao.tipo === 'Despesa' && new Date(transacao.data).getUTCMonth() + 1 === mes && new Date(transacao.data).getUTCFullYear() === ano).length > 0 ? (
+                      <table className='table is-hoverable is-fullwidth'>
+                        <thead>
+                          <tr>
+                            <td>Descricao:</td>
+                            <td>Data:</td>
+                            <td>Valor:</td>
+                            <td />
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {transacoes.filter((transacao) => transacao.tipo === 'Despesa' && new Date(transacao.data).getUTCMonth() + 1 === mes && new Date(transacao.data)).filter((transacao) => new Date(transacao.data).getUTCFullYear() === ano).slice(0, 2).map((transacao) => (
                             <tr>
-                              <td>Descricao:</td>
-                              <td>Data:</td>
-                              <td>Valor:</td>
-                              <td />
+                              <td>{transacao.descricao}</td>
+                              <td>{formatarData.format(new Date(`${new Date(transacao.data).getFullYear()}-${new Date(transacao.data).getUTCMonth() + 1}-${new Date(transacao.data).getUTCDate()}`))}</td>
+                              <td>{formatarValor.format(transacao.valor)}</td>
+                              <td>{transacao.tipo === 'Receita' ? (<i className='bx bxs-up-arrow' />) : (<i className='bx bxs-down-arrow' />)}</td>
                             </tr>
-                          </thead>
-                          <tbody>
-                            {transacoes.filter((transacao) => transacao.tipo === 'Despesa' && new Date(transacao.data).getMonth() + 1 === mes && new Date(transacao.data)).filter((transacao) => new Date(transacao.data).getFullYear() === ano).slice(0, 3).map((transacao) => (
-                              <tr>
-                                <td>{transacao.descricao}</td>
-                                <td>{formatarData.format(new Date(transacao.data))}</td>
-                                <td>{formatarValor.format(transacao.valor)}</td>
-                                <td>{transacao.tipo === 'Receita' ? (<i className='bx bxs-up-arrow' />) : (<i className='bx bxs-down-arrow' />)}</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      ) : (
-                        "Ainda não há despesas nesse mês"
-                      )}
-                    </div>
+                          ))}
+                        </tbody>
+                      </table>
+                    ) : (
+                      "Ainda não há despesas nesse mês"
+                    )}
                   </div>
                 </div>
               </div>
             ) : ""}
           </div>
+        </div>
 
-          <div className="grid">
+        <div className="grid">
+          <div className="col">
             {verGrafDespesa ? (
-              <div className="col">
-                <div className='box'>
-                  <GraficoCategoriaDespesa />
-                </div>
+              <div className='box'>
+                <GraficoCategoriaDespesa />
               </div>
             ) : ""}
-
+          </div>
+          <div className='col'>
             {verGrafReceita ? (
-              <div className='col'>
-                <div className='box'>
-                  <GraficoCategoriaReceita />
-                </div>
+              <div className='box'>
+                <GraficoCategoriaReceita />
               </div>
-            ) : (
-              ""
-            )}
+            ) : ("")}
           </div>
 
+        </div>
 
-          <div className="grid">
+        <div className="grid">
+          <div className="col">
             {verBalanMensal ? (
-              <div className="col">
-                <Grafico />
-              </div>
+              <Grafico />
             ) : ""}
-
-            <div className='col'>
-              <DespesasFixasHome />
-            </div>
           </div>
-          <Footer />
-        </div >
 
-      )
-      }
+          <div className='col'>
+            <DespesasFixasHome />
+          </div>
+        </div>
+        <Footer />
+      </div >
+
+
     </>
   );
 }

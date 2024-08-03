@@ -21,6 +21,7 @@
   transition: all 0.8s ease;
   opacity: 0;
   pointer-events: none;
+  transition: all 0.8s ease;
 }
 
 .cadastroCateg.active {

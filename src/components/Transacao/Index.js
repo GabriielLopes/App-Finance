@@ -1,3 +1,7 @@
+/* eslint-disable react/style-prop-object */
+/* eslint-disable jsx-a11y/control-has-associated-label */
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-return-assign */
 /* eslint-disable consistent-return */
 /* eslint-disable object-shorthand */
 /* eslint-disable camelcase */
@@ -6,7 +10,6 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import { NumericFormat } from 'react-number-format';
 import Swal from 'sweetalert2';
-// import { get } from 'lodash';
 
 import './style.css';
 import axios from "../../services/axios";
@@ -33,10 +36,18 @@ export default function Transacao() {
   const [tipo, setTipo] = useState('');
   const [categoria_id, setCategoria_id] = useState(0);
   const [descricao, setDescricao] = useState('');
+  const [outraData, setOutraData] = useState(false);
   // eslint-disable-next-line no-unused-vars
   const [errors, setErrors] = useState(false);
-
   // eslint-disable-next-line react/jsx-no-useless-fragment
+
+  const dia = new Date().getDate()
+  const mes = new Date().getMonth() + 1;
+  const mesFormatado = mes.toString().padStart(2, '0');
+  const ano = new Date().getFullYear();
+
+  const dataAtual = `${ano}-${mesFormatado}-${dia}`
+
 
   try {
     useEffect(() => {
@@ -84,33 +95,21 @@ export default function Transacao() {
     dispatch(actions.novaTransacaoRequest())
   }
 
-  function createErrorParagraph(msg) {
-    const paragraphError = document.createElement('p');
-    paragraphError.textContent = `* ${msg}`
-    paragraphError.classList.add('error-paragraph'); // Adiciona classe para estilizar
-    return paragraphError;
-  }
 
   let verErrorData = false
   function handleDataChange(e) {
     const { value } = e.target
-
-    e.target.style.border = value === '' ? '1px solid red' : '1px solid rgba(0, 0, 0, 0.2)';
+    const infoErro = document.querySelector('.erro-data-transacao');
 
     if (value === '' && !verErrorData) {
-      const errorParagraph = createErrorParagraph('Este campo não pode ficar vazio!');
-      e.target.parentNode.insertBefore(errorParagraph, e.target.nextSibling)
+      infoErro.textContent = "* Este campo não pode ficar vazio"
       setErrors(true)
       verErrorData = true
       setData(value)
     } else if (value !== '' && !verErrorData) {
-      const errorParagraph = e.target.parentNode.querySelector('.error-paragraph');
-      if (errorParagraph) {
-        e.target.parentNode.removeChild(errorParagraph);
-        setErrors(false)
-        verErrorData = false; // Mensagem removida
-        setData(value)
-      }
+      infoErro.textContent = '';
+      setData(value)
+      setErrors(false)
     }
 
     setData(value)
@@ -119,23 +118,12 @@ export default function Transacao() {
   function handleSubmit(e) {
     e.preventDefault();
 
-    if (tipo === 'Despesa' && valor > conta[0].saldo) {
-      setErrors(true)
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops!',
-        text: 'Seu saldo é insuficiente'
-      })
-      return errors
-    }
-    setErrors(false)
-
     if (valor === 0 || valor === '') {
       setErrors(true);
       Swal.fire({
-        icon: 'error',
+        icon: 'warning',
         title: 'Oops!',
-        text: 'O valor não pode estar vazio! ',
+        text: 'O valor não pode ser R$ 0,00! ',
       })
       return errors
     }
@@ -144,7 +132,7 @@ export default function Transacao() {
     if (data.length === 0) {
       setErrors(true);
       Swal.fire({
-        icon: 'error',
+        icon: 'warning',
         title: 'Oops!',
         text: 'O campo "Data" não pode ficar vazio!',
       })
@@ -152,28 +140,58 @@ export default function Transacao() {
     }
     setErrors(false)
 
+    if (tipo === '') {
+      setErrors(true);
+      Swal.fire({
+        icon: 'warning',
+        title: 'Oops!',
+        text: 'Você precisa informar o tipo da transação',
+      })
+      return errors
+    }
+    setErrors(false);
+
+    if (tipo === 'Despesa' && valor > conta[0].saldo) {
+      setErrors(true)
+      Swal.fire({
+        icon: 'warning',
+        title: 'Oops!',
+        text: 'Seu saldo é insuficiente'
+      })
+      return errors
+    }
+    setErrors(false)
 
     if (tipo.length < 1) {
       setErrors(true);
       Swal.fire({
-        icon: 'error',
+        icon: 'warning',
         title: 'Oops!',
         text: 'O campo "tipo" não pode estar vazio!',
       })
     }
     setErrors(false)
 
+    if (categoria_id === 0 || categoria_id === '') {
+      setErrors(true);
+      Swal.fire({
+        icon: 'warning',
+        title: 'Oops!',
+        text: 'Você precisa informar a categoria'
+      })
+      return errors
+    }
+
     if (descricao.length < 5 || descricao.length > 255) {
       setErrors(true)
       Swal.fire({
-        icon: 'error',
+        icon: 'warning',
         title: 'Oops!',
         text: 'A descrição deve ter no mínimo 5 caracteres e no máximo 255 caracteres'
       })
       return errors
     }
     setErrors(false)
-
 
     if (errors) return
 
@@ -186,7 +204,7 @@ export default function Transacao() {
         descricao,
         user_id: user_id,
         conta_id: conta_id,
-        valor,
+        valor: parseFloat(valor),
         categoria_id,
       })
       setIsLoading(false)
@@ -210,7 +228,33 @@ export default function Transacao() {
     }
 
   }
+  // eslint-disable-next-line new-cap
 
+  function selecionarTipo(e) {
+    const input = e.target
+
+    if (e.target.value === 'Receita') {
+      if (tipo === 'Receita') {
+        input.classList = 'button is-success'
+        input.style.boxShadow = ''
+        setTipo('');
+      } else {
+        input.classList = 'button is-success is-active'
+        input.style.boxShadow = '3px 3px 12px 3px rgba(0, 0, 0, 0.3)'
+        setTipo('Receita');
+      }
+    } else if (e.target.value === 'Despesa') {
+      if (tipo === 'Despesa') {
+        input.classList = 'button is-danger'
+        input.style.boxShadow = ''
+        setTipo('');
+      } else {
+        input.classList = 'button is-danger is-active'
+        input.style.boxShadow = '3px 3px 12px 3px rgba(0, 0, 0, 0.3)'
+        setTipo('Despesa');
+      }
+    }
+  }
 
   return (
     <div className="transacao">
@@ -222,63 +266,77 @@ export default function Transacao() {
         </div>
 
       ) : (
-      <form onSubmit={handleSubmit}> <div className="box box-transacao">
-        <h1 className="title titulo-transacao">Nova transação</h1>
-        <hr className="hr" />
-        <div className="col-sm my -3">
-          <label className="label" htmlFor="valor">Valor:</label>
-          <p className="control has-icons-left has-icons-right">
-            <NumericFormat
-              className="input"
-              value={valor}
-              thousandSeparator="."
-              decimalSeparator=","
-              prefix="R$ "
-              fixedDecimalScale={2}
-              allowNegative={false}
-              // eslint-disable-next-line react/jsx-no-bind
-              onValueChange={(e) => setValor(e.floatValue)}
-            />
-            <span className="icon is-large is-left"> <i className='bx bxs-calculator' /> </span> </p> </div>
+        <form onSubmit={handleSubmit}>
 
-        <label className="label">Data:</label>
-        <input type="date" className="input" onChange={handleDataChange} />
+          <div className="box box-transacao">
+            <h1 className="title titulo-transacao">Nova transação</h1>
+            <hr className="hr" />
+            <div className="col-sm my-3">
+              <p className="control has-icons-left has-icons-right">
+                <NumericFormat
+                  value={valor}
+                  className="input valor"
+                  thousandSeparator="."
+                  decimalSeparator=","
+                  decimalScale={2}
+                  fixedDecimalScale
+                  maxLength={15}
+                  onFocus={(e) => e.target.select()}
+                  allowNegative={false}
+                  // eslint-disable-next-line react/jsx-no-bind
+                  onValueChange={(e) => setValor(e.floatValue)}
+                />
+                <span className="icon is-large is-left">R$</span> </p> </div>
 
-        <label className="label">Tipo:</label>
-        <div className="select" >
-        <select type="text" className="input" value={tipo} onChange={(e) => setTipo(e.target.value)}>
-          <option>Selectione o tipo de transação</option>
-          <option value="Receita">Receita</option>
-          <option value="Despesa">Despesa</option>
-        </select>
-        </div>
+            <div className="data">
+              <i className="bx bx-calendar icone" />
+              <button type="button" className={data === dataAtual ? "button is-active" : "button"} onClick={() => setData(dataAtual)}>Hoje</button> <button type="button" className={outraData ? "button is-active" : "button"} onClick={() => setOutraData(true)} >Outro...</button> <input type="date" className="inputdate" value={data} hidden={!outraData} onChange={handleDataChange} />
+              <br />
+            </div>
+            <div className="content is-small">
+              <p className="info-erro erro-data-transacao" />
+            </div>
 
-        <label className="label">Categoria:</label>
-        <div className="select">
-        <select className="input" onChange={(e) => setCategoria_id(Number(e.target.value))}>
-          <option value="0">Selecione uma categoria</option>
-          {categorias.map((categoria) => (
-            <option key={categoria.id} value={categoria.id}>{categoria.nome} / {categoria.descricao}</option>
-          ))}
-        </select>
-        </div>
-          <br />
-        <a href="/config" className="link-cadastrarCategoria"><i className='bx bxs-file-plus' /> Cadastrar categorias</a>
+            <div className="label">Tipo de transação:
+              <br />
+              <button type="button" className="button is-success" onClick={selecionarTipo} value="Receita" disabled={tipo === 'Despesa'}><i className='bx bx-line-chart' /> Receita</button> <button type="button" className="button is-danger" onClick={selecionarTipo} value='Despesa' disabled={tipo === 'Receita'}><i className='bx bx-line-chart-down' /> Despesa</button> <button type="button" className="button is-danger" disabled={tipo === ''} onClick={() => setTipo('')}><i className="bx bx-x" /></button>
+            </div>
 
-        <label className="label">Descrição:</label>
-        <input type="text" className="input" onChange={(e) => setDescricao(e.target.value)} value={descricao} />
-        <div className="grid">
-          <div className="col">
-            <button className="button is-primary" type="submit"><i className='bx bx-check' /> Efetuar transação </button>
+            <label className="label">
+              Categoria:
+              <p className="control has-icons-left">
+                <select className="input select"  onChange={(e) => setCategoria_id(Number(e.target.value))}>
+                  <option value="0">Selecione uma categoria</option>
+                  {categorias.map((categoria) => (
+                    <option key={categoria.id} value={categoria.id}>{categoria.nome}</option>
+                  ))}
+                </select>
+                <span className="icon icon-categoria is-large is-left">{categoria_id > 0 ? (<i className={categorias.filter(categoria => categoria.id === categoria_id)[0].icone} />) : ""}</span>
+              </p>
+            </label>
+
+            <label className="label">
+              Descrição:
+              <p className="control has-icons-left">
+                <input type="text" className="input descricao" onChange={(e) => setDescricao(e.target.value)} value={descricao} />
+                <span className="icon is-large is-left"><i className="bx bx-message-square" /></span>
+              </p>
+
+            </label>
+
+            <div className="grid">
+              <div className="col">
+                <button className="button is-primary" type="submit"><i className='bx bx-check' /> Efetuar transação </button>
+              </div>
+              <div className="col">
+                <button className="button is-danger" type="button" onClick={cancelarTransacao} ><i className='bx bx-x' /> Cancelar</button>
+              </div>
+            </div>
           </div>
-          <div className="col">
-            <button className="button is-danger" type="button" onClick={cancelarTransacao} ><i className='bx bx-x' /> Cancelar</button>
-          </div>
-        </div>
-      </div>
-      </form>
-      )}
-    </div>
+        </form>
+      )
+      }
+    </div >
   );
 }
 

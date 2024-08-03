@@ -4,7 +4,6 @@
   text-align: center;
 }
 
-
 .bx.bx-chevron-down {
   font-size: 30px;
 }
@@ -14,9 +13,14 @@
   font-size: 20px;
 }
 
-.bx-pencil {
+.bxs-pencil {
   font-size: 20px;
   color: rgb(0, 104, 189);
+}
+
+.bx-plus {
+  font-size: 20px;
+  color: rgb(14, 170, 0);
 }
 
 .bx-check {
@@ -38,4 +42,17 @@
   font-size: 23px;
   position: relative;
   left: -5px;
+}
+
+.box-despesas .bx-filter-alt {
+  left: 25px;
+  font-size: 25px;
+}
+
+.box-despesas i {
+  font-size: 25px;
+}
+
+.box-despesas table tbody tr td:nth-child(2) {
+  text-align: justify;
 }

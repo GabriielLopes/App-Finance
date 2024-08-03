@@ -31,7 +31,6 @@ body {
   width: 240px;
 }
 
-
 .sidebar .logo_content .logo {
   color: #fff;
   display: flex;
@@ -101,6 +100,7 @@ body {
   text-align: center;
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
   transition: all 0.8s ease;
+  z-index: 0;
   opacity: 0;
   pointer-events: none;
 }
@@ -174,12 +174,14 @@ body {
   display: flex;
   align-items: center;
   opacity: 0;
+  z-index: 0;
   pointer-events: none;
   white-space: nowrap;
 }
 
 .sidebar.active .profile .profile_details{
   opacity: 1;
+  z-index: 0;
   pointer-events: auto;
 }
 
@@ -191,15 +193,18 @@ body {
 }
 
 .profile .profile_details .name_job {
+  z-index: 0;
   margin-left: 10px;
 }
 
 .profile .profile_details .name{
+  z-index: 0;
   font-size: 15px;
   font-weight: 400;
 }
 
 .profile .profile_details .job{
+  z-index: 0;
   font-size: 12px;
 }
 

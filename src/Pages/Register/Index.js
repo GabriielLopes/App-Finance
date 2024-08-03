@@ -2,11 +2,11 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useState } from 'react';
-import Swal from 'sweetalert2';
 import isEmail from 'validator/lib/isEmail';
 import { useDispatch, useSelector } from 'react-redux';
 import { FiUser, FiMail, FiLock } from 'react-icons/fi';
 
+import Swal from 'sweetalert2';
 import { Btn } from './styled';
 import * as actions from '../../store/modules/auth/actions';
 import Loading from '../../components/Loading/index';
@@ -16,77 +16,138 @@ export default function Register() {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmSenha, setConfirmSenha] = useState('');
+  const [errors, setErrors] = useState(false);
   const isLoading = useSelector((state) => state.auth.isLoading);
 
-  async function handleSubmit(e) {
-    e.preventDefault();
-    let formErrors = false;
+  const temSimbolos = (string) => {
+    const regex = /^[A-Za-z\s]+$/i;
+    return regex.test(string)
+  }
 
-    if (nome.length < 3 || nome.length > 255) {
-      formErrors = true;
-      const Toast = Swal.mixin({
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-          toast.onmouseenter = Swal.stopTimer;
-          toast.onmouseleave = Swal.resumeTimer;
-        },
-      });
-      Toast.fire({
-        icon: 'error',
-        title: 'O nome precisa ter mais que 3 caracteres e no máximo 255',
-        showCloseButton: true,
-      });
-      return formErrors;
+  function validaNome(e) {
+    setNome(e.target.value);
+    const input = e.target;
+    const infoError = document.querySelector('.erro-nome')
+    input.addEventListener("input", validaNome);
+
+    if (nome.length < 3 || nome.length > 50) {
+      setErrors(true)
+      input.classList = 'input is-danger'
+      infoError.textContent = '* O campo "Nome" deve ter de 3 até 50 caracteres!'
+      input.addEventListener("input", validaNome)
+      return
+
+    } if (!temSimbolos(nome)) {
+      setErrors(true);
+      input.classList = 'input is-danger'
+      infoError.textContent = '* O campo "Nome" não pode ter símbolos!'
+      input.addEventListener("input", validaNome)
+      return
     }
+    input.classList = 'input'
+    infoError.textContent = ''
+    input.addEventListener("input", validaNome)
+    setErrors(false);
 
+  }
+
+  function validaEmail(e) {
+    setEmail(e.target.value)
+    const input = e.target
+    const infoError = document.querySelector('.erro-email')
     if (!isEmail(email)) {
-      formErrors = true;
+      setErrors(true);
+      input.classList = 'input is-danger'
+      infoError.textContent = '* O e-mail informado é inválido!'
+      input.addEventListener("input", validaEmail)
+      return
+    }
+    setErrors(false);
+    input.classList = 'input'
+    input.addEventListener("input", validaEmail)
+    infoError.textContent = ''
+  }
 
-      const Toast = Swal.mixin({
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-          toast.onmouseenter = Swal.stopTimer;
-          toast.onmouseleave = Swal.resumeTimer;
-        },
-      });
-      Toast.fire({
-        icon: 'error',
-        title: 'O e-mail informado é inválido',
-        showCloseButton: true,
-      });
-      return formErrors;
+  function validaSenha(e,) {
+    setPassword(e.target.value)
+    const input = e.target
+    const infoError = document.querySelector('.erro-senha');
+    if (password.length < 8) {
+      setErrors(true);
+      input.classList = 'input is-danger'
+      infoError.textContent = '* A sua senha precisa ter pelo menos 8 caracteres'
+      input.addEventListener("input", validaSenha)
+      return
     }
 
-    if (password.length < 6 || password.length > 50) {
-      formErrors = true;
-      const Toast = Swal.mixin({
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-          toast.onmouseenter = Swal.stopTimer;
-          toast.onmouseleave = Swal.resumeTimer;
-        },
-      });
-      Toast.fire({
-        icon: 'error',
-        title: 'a senha precisa ter mais que 6 caracteres e no máximo 50',
-        showCloseButton: true,
-      });
-      return formErrors;
+    if (temSimbolos(password)) {
+      setErrors(true)
+      input.classList = 'input is-danger'
+      infoError.textContent = '* A sua senha precisa ter pelo menos um símbolo!'
+      input.addEventListener("input", validaSenha)
+      return
     }
-    
-    dispatch(actions.registerRequest({ nome, email, password }));
+    setErrors(false)
+    input.classList = 'input'
+    input.addEventListener("input", validaSenha)
+    infoError.textContent = ''
+
+  }
+
+  function validaConfirmSenha(e) {
+    setConfirmSenha(e.target.value);
+    const input = e.target;
+    const infoError = document.querySelector('.erro-senha')
+    if (password !== confirmSenha) {
+      setErrors(true);
+      input.classList = 'input is-danger'
+      infoError.textContent = '* As senhas não correspondem!'
+      input.addEventListener("input", validaConfirmSenha)
+      return
+    }
+    input.classList = 'input'
+    infoError.textContent = ''
+    input.addEventListener("input", validaConfirmSenha)
+    setErrors(false)
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault()
+    if (nome.length <= 0) {
+      return Swal.fire({
+        title: 'error!',
+        icon: 'error',
+        text: `O campo "Nome", não pode ficar vazio!`
+      })
+    }
+
+    if (email.length <= 0) {
+      return Swal.fire({
+        title: 'error',
+        icon: 'error',
+        text: `O campo "E-mail", não pode ficar vazio!`,
+      })
+    }
+
+    if (password.length <= 0) {
+      return Swal.fire({
+        title: 'error',
+        icon: 'error',
+        text: `O campo "Senha", não pode ficar vazio!`,
+      })
+    }
+    if (confirmSenha.length <= 0) {
+      return Swal.fire({
+        title: 'error',
+        icon: 'error',
+        text: 'O campo "Confirme sua senha", não pode ficar vazio!'
+      })
+    }
+    if (errors === false) {
+      return dispatch(actions.registerRequest({ nome, email, password }));
+    }
+
   }
 
   return (
@@ -103,7 +164,7 @@ export default function Register() {
                   <input
                     className="input"
                     value={nome}
-                    onChange={(e) => setNome(e.target.value)}
+                    onChange={validaNome}
                     type="name"
                     placeholder="Ex: Pedro Silva"
                   />
@@ -111,6 +172,9 @@ export default function Register() {
                     <FiUser />
                   </span>
                 </p>
+                <div className='content is-small'>
+                  <p className='info-erro erro-nome' />
+                </div>
               </div>
               <div className="col my-2">
                 <label className="label">Email</label>
@@ -118,7 +182,7 @@ export default function Register() {
                   <input
                     className="input"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={validaEmail}
                     type="email"
                     placeholder="alex@example.com"
                   />
@@ -126,6 +190,9 @@ export default function Register() {
                     <FiMail />
                   </span>
                 </p>
+                <div className='content is-small'>
+                  <p className='info-erro erro-email' />
+                </div>
               </div>
               <div className="col my-2">
                 <label className="label">Senha</label>
@@ -133,7 +200,7 @@ export default function Register() {
                   <input
                     className="input"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={validaSenha}
                     type="password"
                     placeholder="*****"
                   />
@@ -141,6 +208,25 @@ export default function Register() {
                     <FiLock />
                   </span>
                 </p>
+              </div>
+
+              <div className="col my-2">
+                <label className="label">Confirme sua senha</label>
+                <p className="control has-icons-left">
+                  <input
+                    className="input"
+                    value={confirmSenha}
+                    onChange={validaConfirmSenha}
+                    type="password"
+                    placeholder="*****"
+                  />
+                  <span className="icon is-small is-left">
+                    <FiLock />
+                  </span>
+                </p>
+                <div className='content is-small'>
+                  <p className='info-erro erro-senha' />
+                </div>
               </div>
               <div className="grid my-3">
                 <div className="col">

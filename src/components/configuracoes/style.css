@@ -1,0 +1,34 @@
+.configuracoes {
+  display: flex;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.4);
+  bottom: 0;
+  opacity: 0;
+  transition: all 0.7s ease-in-out;
+}
+
+.configuracoes .box {
+  position: relative;
+  top: -100%;
+  transition: all 0.7s ease-in-out;
+}
+
+.configuracoes.active {
+  top: 0;
+  opacity: 1;
+  z-index: 25;
+}
+
+.configuracoes.active .box{
+  top: 0;
+  text-align: justify;
+  transition: all 0.7s ease-in-out;
+}
