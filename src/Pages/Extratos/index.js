@@ -268,10 +268,15 @@ export default function Extratos() {
   }
 
   function handlePaginaAnterior() {
-    if (paginaAtual <=1) return
+    if (paginaAtual <= 1) return
     setMinPagina(minPagina - verPorPagina);
     setMaxPagina(maxPagina - verPorPagina);
     setPaginaAtual(paginaAtual - 1);
+  }
+
+  function handleVerPorPagina(e) {
+    setVerPorPagina(e.target.value);
+    setMaxPagina(e.target.value);
   }
 
 
@@ -438,7 +443,7 @@ export default function Extratos() {
                     <p>Quantidade por página:
                       <br />
                       <div className="select">
-                        <select className="input" value={verPorPagina} onChange={(e) => setVerPorPagina(e.target.value)}>
+                        <select className="input" value={verPorPagina} onChange={handleVerPorPagina}>
                           <option value={10}>10</option>
                           <option value={20}>20</option>
                           <option value={30}>30</option>
@@ -457,6 +462,7 @@ export default function Extratos() {
                 {transacoes.length > 0 ? (
                   <table className="table is-hoverable is-fullwidth">
                     <thead>
+                      <th>id</th>
                       <th />
                       <th>Descrição</th>
                       <th>Categoria</th>
@@ -468,6 +474,7 @@ export default function Extratos() {
                     <tbody>
                       {transacoes.slice(minPagina, maxPagina).map((transacao) => (
                         <tr>
+                          <td>{transacao.id}</td>
                           <td>{transacao.tipo === "Receita" ? (
                             <i className='bx bxs-up-arrow' />
                           ) : <i className='bx bxs-down-arrow' />}</td>
@@ -498,11 +505,13 @@ export default function Extratos() {
 
           <div className="grid">
             <div className="col">
-              <div className="botoes_mudar_pagina">
-                <button type="button" className="button" onClick={handlePaginaAnterior}><i className='bx bx-left-arrow-alt' /></button>
-                <p className="tag is-large">Página: {paginaAtual} de {qtdePagina}</p>
-                <button type="button" className="button" onClick={handleProximaPagina}><i className='bx bx-right-arrow-alt' /></button>
-              </div>
+              {transacoes.length > 0 ? (
+                <div className="botoes_mudar_pagina">
+                  <button type="button" className="button" onClick={handlePaginaAnterior}><i className='bx bx-left-arrow-alt' /></button>
+                  <p className="tag is-large">Página: {paginaAtual} de {qtdePagina}</p>
+                  <button type="button" className="button" onClick={handleProximaPagina}><i className='bx bx-right-arrow-alt' /></button>
+                </div>
+              ) : ""}
             </div>
 
           </div>
