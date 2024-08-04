@@ -134,7 +134,7 @@ export default function Extratos() {
         const response = await axios.get(`/transacoes/all/${conta.id}`);
         setTransacoesBase(response.data.filter(transacao => new Date(transacao.data).getUTCMonth() + 1 === mes && new Date(transacao.data).getUTCFullYear() === ano));
         setTransacoes(response.data.filter(transacao => new Date(transacao.data).getUTCMonth() + 1 === mes && new Date(transacao.data).getUTCFullYear() === ano));
-        setQtdePagina(Math.ceil(response.data.length / verPorPagina))
+        setQtdePagina(Math.ceil(transacoes.length / verPorPagina))
         setIsLoading(false)
       } catch (error) {
         setIsLoading(false)
@@ -462,7 +462,6 @@ export default function Extratos() {
                 {transacoes.length > 0 ? (
                   <table className="table is-hoverable is-fullwidth">
                     <thead>
-                      <th>id</th>
                       <th />
                       <th>Descrição</th>
                       <th>Categoria</th>
@@ -474,7 +473,6 @@ export default function Extratos() {
                     <tbody>
                       {transacoes.slice(minPagina, maxPagina).map((transacao) => (
                         <tr>
-                          <td>{transacao.id}</td>
                           <td>{transacao.tipo === "Receita" ? (
                             <i className='bx bxs-up-arrow' />
                           ) : <i className='bx bxs-down-arrow' />}</td>
@@ -508,7 +506,7 @@ export default function Extratos() {
               {transacoes.length > 0 ? (
                 <div className="botoes_mudar_pagina">
                   <button type="button" className="button" onClick={handlePaginaAnterior}><i className='bx bx-left-arrow-alt' /></button>
-                  <p className="tag is-large">Página: {paginaAtual} de {qtdePagina}</p>
+                  <p className="tag is-large">Página: {paginaAtual} de {Math.ceil(transacoes.length / verPorPagina)}</p>
                   <button type="button" className="button" onClick={handleProximaPagina}><i className='bx bx-right-arrow-alt' /></button>
                 </div>
               ) : ""}
