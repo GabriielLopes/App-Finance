@@ -13,8 +13,7 @@
 }
 
 .page_extrato .input.descricao {
-  width: 450px;
-  margin-right: 35px;
+  background-color: transparent;
 }
 
 .page_extrato .div_pesquisa {

@@ -4,10 +4,12 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import Chart from "react-google-charts";
+import Swal from "sweetalert2";
 
 import './style.css';
 import axios from '../../services/axios';
 import Loading from "../../components/Loading";
+import Footer from '../../components/Footer';
 
 export default function Extratos() {
   const user = useSelector(state => state.auth.user);
@@ -17,6 +19,7 @@ export default function Extratos() {
   const [categorias, setCategorias] = useState([]);
   const [mes, setMes] = useState(new Date().getUTCMonth() + 1);
   const [dadosGraf, setDadosGraf] = useState([])
+  const [dadosDespesaGraf, setDadosDespesaGraf] = useState([]);
   const ano = new Date().getUTCFullYear();
 
   const formatarValor = new Intl.NumberFormat('pt-BR', {
@@ -146,6 +149,42 @@ export default function Extratos() {
     inserirDadosGraf()
   }, [conta, mes, transacoes])
 
+  // inserir dados no gráfico de despesas
+  useEffect(() => {
+    function inserirDadosGrafDespesa() {
+      if (transacoes.length > 0) {
+        const objDespesa = transacoes.filter((transacao) => transacao.tipo === 'Despesa' && new Date(transacao.data).getUTCMonth() + 1 === mes && new Date(transacao.data)).filter((transacao) => new Date(transacao.data).getFullYear() === ano)
+          .reduce((acumulador, despesa) => {
+            const categoria = { categoria_id: despesa.categoria_id || 0 };
+            if (!acumulador[categoria.categoria_id]) {
+              // eslint-disable-next-line no-param-reassign
+              acumulador[categoria.categoria_id] = { total: 0, id: categoria.categoria_id }
+
+            }
+
+            // eslint-disable-next-line no-param-reassign
+            acumulador[categoria.categoria_id].total += parseFloat(despesa.valor);
+            return acumulador
+          }, [])
+
+
+        const dados = [["Despesas", "Valores em reais"]];
+
+        objDespesa.forEach((despesa) => {
+          categorias.forEach((categoria) => {
+            if (categoria.id === despesa.id) {
+              dados.push([`${categoria.nome}`, parseFloat(despesa.total)])
+
+            }
+          })
+        })
+        setDadosDespesaGraf(dados)
+      }
+    }
+    inserirDadosGrafDespesa();
+  }, [conta, mes, transacoes])
+
+
   function setMesAnterior() {
     if (mes <= 1) return
     setMes(mes - 1)
@@ -156,15 +195,70 @@ export default function Extratos() {
     setMes(mes + 1);
   }
 
-  const options = {
-    legend: 'none',
-    text: 'none',
-    colors: ['blue', 'red'],
-    backgroundColor: 'transparent',
-    pieHole: 0.658,
-    pieStartAngle: 180
+  async function handleDelete(id) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Você tem certeza?',
+      text: 'Você não poderá voltar atrás!',
+      showCancelButton: true,
+      showConfirmButton: true,
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          setIsLoading(true)
+          await axios.delete(`/transacoes/deletar/${id}/${conta.id}`)
+          setIsLoading(false)
+          Swal.fire({
+            icon: 'success',
+            title: 'Sucesso!',
+            text: 'A transação foi excluída com sucesso! O saldo já foi atualizado.'
+          })
+        } catch (error) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Erro!',
+            text: error.response.data.errors,
+          })
+        }
+      }
+    })
   }
 
+
+  const optionsGrafDespesa = {
+    pieSliceTextStyle: {
+      color: document.querySelector('.theme-light') ? 'black' : 'white',
+    },
+    legend: 'true',
+    backgroundColor: 'transparent',
+    legendTextColor: document.querySelector('.theme-light') ? 'black' : 'white',
+    pieSlice: 0.8,
+    is3d: true,
+    slices: {
+      1: { offset: 0.1 },
+      2: { offset: 0.0 },
+      3: { offset: 0.1 },
+      4: { offset: 0.2 },
+    },
+  }
+
+  const optionsBalancoMensal = {
+    colors: ["red", "blue"],
+    legend: 'none',
+    gridLines: {
+      horizontal: false,
+      vertical: false,
+    },
+    animation: {
+      duration: 500,
+      easing: "out",
+      startup: true,
+    },
+    backgroundColor: 'transparent',
+    titleColor: document.querySelector('.theme-light') ? 'black' : 'white',
+    legendTextColor: document.querySelector('.theme-light') ? 'black' : 'white',
+    title: `BALANÇO PATRIMONIAL ${mes}/${ano}`
+  }
 
   return (
     <div className="pages_content page_extrato">
@@ -172,106 +266,176 @@ export default function Extratos() {
         <Loading isLoading={isLoading} />
       ) : (
         <>
-          <h1 className="title">Extratos de transferências bancárias</h1>
-          <hr />
-
           <br />
           <div className="grid">
-            <div className="col div_pesquisa">
-              <p className="control has-icons-left">
-                <input type="text" className="input descricao" placeholder="Filtre por: Descrição, categoria ou tipo" />
-                <span className="icon is-large is-left"><i className="bx bx-filter" /></span>
-              </p>
-              <button type="button" className="button"><i className="bx bx-search-alt" /></button>
-            </div>
 
-          </div>
+            <div className="col">
+              <div className="box div-balanco">
+                Balanço do mês de <strong>{mesAtual()}</strong>
+                <br />
 
-          <div className="columns">
-            <div className="column is-three-fifths">
-              <div className="box">
-                <center>
-                  <button type="button" className="button btnMudarMes" onClick={setMesAnterior}><i className="bx bx-arrow-back" /></button>
-                  <p className="tag is-large is-info">
-                    <i className="bx bx-calendar" /> {mesAtual()}
-                  </p>
-                  <button type="button" className="button btnMudarMes" onClick={setMesAcima}><i className="bx bx-right-arrow-alt" /></button>
-                </center>
+                {transacoes.length > 0 ? (
+                  <div className="grid">
+                    <div className="col">
+                      <center>
+                        <Chart
+                          chartType="ColumnChart"
+                          data={[
+                            ['Balanço mensasl', 'Despesas', 'Receitas'],
+                            ['', parseFloat(transacoes.filter((transacao) => transacao.tipo === 'Despesa').map((transacao) => parseFloat(transacao.valor)).reduce((valores, acumulador) => acumulador += valores, 0)), parseFloat(transacoes.filter((transacao) => transacao.tipo === 'Receita').map((transacao) => parseFloat(transacao.valor)).reduce((valores, acumulador) => acumulador += valores, 0))]
+                          ]}
+                          options={optionsBalancoMensal}
+                          width={300}
+                          height={135}
+                        />
+                        <p>
+                          Receitas: <strong>{formatarValor.format(parseFloat(transacoes.filter((transacao) => transacao.tipo === 'Receita').map((transacao) => parseFloat(transacao.valor)).reduce((valores, acumulador) => acumulador += valores, 0)))}</strong>
+                          <br />
+                          Despesas: <strong>{formatarValor.format(parseFloat(transacoes.filter((transacao) => transacao.tipo === 'Despesa').map((transacao) => parseFloat(transacao.valor)).reduce((valores, acumulador) => acumulador += valores, 0)))}</strong>
+                        </p>
 
-                <table className="table is-hoverable is-fullwidth">
-                  <thead>
-                    <th>Tipo</th>
-                    <th>Descrição</th>
-                    <th>Categoria</th>
-                    <th>Valor</th>
-                    <th>Data</th>
-                    <th>Opções</th>
-                  </thead>
 
-                  <tbody>
-                    {transacoes.map((transacao) => (
-                      <tr>
-                        <td>{transacao.tipo === "Receita" ? (
-                          <i className='bx bxs-up-arrow' />
-                        ) : <i className='bx bxs-down-arrow' />}</td>
-                        <td>{transacao.descricao}</td>
-                        <td>{categorias.length > 0 ? (
-                          <i className={categorias.filter(categoria => categoria.id === parseFloat(transacao.categoria_id))[0].icone} />
-                        ) : ""}
-                          {categorias.filter(categoria => categoria.id === parseFloat(transacao.categoria_id))[0].nome}
-                        </td>
-                        <td><strong>{formatarValor.format(transacao.valor)}</strong></td>
-                        <td>{formatarData.format(new Date(transacao.data))}</td>
-                        <td>
-                          <button type="button" className="button"><i className="bx bxs-pencil" /></button>
-                          <button type="button" className="button"><i className="bx bxs-trash" /></button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                      </center>
+
+                    </div>
+
+                  </div>
+                ) : (
+                  <>
+                    <hr />
+                    <center><p>Não há movimentações nesse perído.</p></center>
+                  </>
+                )}
               </div>
             </div>
 
-            <div className="col is-two-fifths">
+            <div className="col">
               <div className="box">
-                <div className="grid">
-                  <div className="col">
-                    <center>{mesAtual()}</center>
+                <center>Mês de {mesAtual()} - <strong>Receitas x Despesas</strong></center>
+                {transacoes.length > 0 ? (
+                  <center>
                     <Chart
                       chartType="PieChart"
-                      options={options}
+                      options={optionsGrafDespesa}
                       data={dadosGraf}
                       width={350}
                       height={180}
                     />
+                  </center>
+                ) : (
+                  <>
+                    <hr />
+                    <center><p>Não há movimentações nesse perído.</p></center>
+                  </>
+                )}
+              </div>
+            </div>
+
+            <div className="col">
+              <div className="box">
+                <center><p>Mês de {mesAtual()} - <strong>Despesas</strong></p></center>
+                {transacoes.length > 0 ? (
+                  <center>
+                    <Chart
+                      chartType="PieChart"
+                      options={optionsGrafDespesa}
+                      data={dadosDespesaGraf}
+                      width={350}
+                      height={180}
+                    />
+                  </center>
+                ) : (
+                  <>
+                    <hr />
+                    <center><p>Não há movimentações nesse perído.</p></center>
+                  </>
+                )}
+              </div>
+            </div>
+
+          </div>
+
+          <div className="grid">
+            <div className="col">
+              <div className="box">
+                <div className="grid">
+                  <div className="col">
+                    <p className="control has-icons-left">
+                      <input type="text" className="input descricao" placeholder="Filtre pela descrição" />
+                      <span className="icon is-large is-left"><i className="bx bx-filter" /></span>
+                    </p>
+                    <button type="button" className="button"><i className="bx bx-search-alt" /></button>
+                  </div>
+
+                  <div className="col">
+                    <center>
+                      <button type="button" className="button btnMudarMes" onClick={setMesAnterior}><i className="bx bx-arrow-back" /></button>
+                      <p className="tag is-large is-info">
+                        <i className="bx bx-calendar" /> {mesAtual()}
+                      </p>
+                      <button type="button" className="button btnMudarMes" onClick={setMesAcima}><i className="bx bx-right-arrow-alt" /></button>
+                    </center>
+                  </div>
+
+                  <div className="col">
+                    <p>Quantidade por página:
+                      <select className="input">
+                        <option>20</option>
+                        <option>30</option>
+                        <option>40</option>
+                        <option>Mostrar tudo</option>
+                      </select>
+                    </p>
                   </div>
                 </div>
 
-              </div>
-              <div className="grid">
-                <div className="col">
-                  <div className="box div-balanco">
-                    <p>
-                      Balanço do mês de <strong>{mesAtual()}</strong>
-                    </p>
-                    <br />
-                    <p>
-                      Receitas: <strong>{formatarValor.format(parseFloat(transacoes.filter((transacao) => transacao.tipo === 'Receita').map((transacao) => parseFloat(transacao.valor)).reduce((valores, acumulador) => acumulador += valores, 0)))}</strong>
-                      <br />
-                      - Despesas: <strong>{formatarValor.format(parseFloat(transacoes.filter((transacao) => transacao.tipo === 'Despesa').map((transacao) => parseFloat(transacao.valor)).reduce((valores, acumulador) => acumulador += valores, 0)))}</strong>
-                      <hr />
-                      Saldo do mês: <strong>{formatarValor.format(parseFloat(transacoes.filter((transacao) => transacao.tipo === 'Receita').map((transacao) => parseFloat(transacao.valor)).reduce((valores, acumulador) => acumulador += valores, 0)) - parseFloat(transacoes.filter((transacao) => transacao.tipo === 'Despesa').map((transacao) => parseFloat(transacao.valor)).reduce((valores, acumulador) => acumulador += valores, 0)))}</strong>
-                    </p>
-                  </div>
-                </div>
-              </div>
 
+
+                {transacoes.length > 0 ? (
+                  <table className="table is-hoverable is-fullwidth">
+                    <thead>
+                      <th />
+                      <th>Descrição</th>
+                      <th>Categoria</th>
+                      <th>Valor</th>
+                      <th>Data</th>
+                      <th>Opções</th>
+                    </thead>
+
+                    <tbody>
+                      {transacoes.map((transacao) => (
+                        <tr>
+                          <td>{transacao.tipo === "Receita" ? (
+                            <i className='bx bxs-up-arrow' />
+                          ) : <i className='bx bxs-down-arrow' />}</td>
+                          <td>{transacao.descricao}</td>
+                          <td>{categorias.length > 0 ? (
+                            <i className={categorias.filter(categoria => categoria.id === parseFloat(transacao.categoria_id))[0].icone} />
+                          ) : ""}
+                            {categorias.filter(categoria => categoria.id === parseFloat(transacao.categoria_id))[0].nome}
+                          </td>
+                          <td><strong>{formatarValor.format(transacao.valor)}</strong></td>
+                          <td>{formatarData.format(new Date(transacao.data))}</td>
+                          <td>
+                            <button type="button" className="button" onClick={() => handleDelete(transacao.id)}><i className="bx bxs-trash" /></button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <>
+                    <hr />
+                    <center><p>Não há movimentações nesse período.</p></center>
+                  </>
+                )}
+              </div>
             </div>
           </div>
 
         </>
       )}
+      <Footer />
     </div>
   )
 }
