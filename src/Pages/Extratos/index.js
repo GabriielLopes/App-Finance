@@ -16,16 +16,21 @@ export default function Extratos() {
   const [isLoading, setIsLoading] = useState(false);
   const [conta, setConta] = useState([]);
   const [transacoes, setTransacoes] = useState([]);
+  const [transacoesBase, setTransacoesBase] = useState([]);
   const [categorias, setCategorias] = useState([]);
+  const [descricao, setDescricao] = useState('');
+  const [minPagina, setMinPagina] = useState(0);
+  const [maxPagina, setMaxPagina] = useState(10);
+  const [qtdePagina, setQtdePagina] = useState(0)
+  const [verPorPagina, setVerPorPagina] = useState(10);
+  const [paginaAtual, setPaginaAtual] = useState(1);
+  const [filtroSelecionado, setFiltroSelecionado] = useState('');
   const [mes, setMes] = useState(new Date().getUTCMonth() + 1);
   const [dadosGraf, setDadosGraf] = useState([])
   const [dadosDespesaGraf, setDadosDespesaGraf] = useState([]);
   const ano = new Date().getUTCFullYear();
 
-  const formatarValor = new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-  })
+
 
   const formatarData = new Intl.DateTimeFormat('pt-BR', {
     year: '2-digit',
@@ -127,7 +132,9 @@ export default function Extratos() {
       try {
         setIsLoading(true)
         const response = await axios.get(`/transacoes/all/${conta.id}`);
+        setTransacoesBase(response.data.filter(transacao => new Date(transacao.data).getUTCMonth() + 1 === mes && new Date(transacao.data).getUTCFullYear() === ano));
         setTransacoes(response.data.filter(transacao => new Date(transacao.data).getUTCMonth() + 1 === mes && new Date(transacao.data).getUTCFullYear() === ano));
+        setQtdePagina(Math.ceil(response.data.length / verPorPagina))
         setIsLoading(false)
       } catch (error) {
         setIsLoading(false)
@@ -135,7 +142,7 @@ export default function Extratos() {
       }
     }
     getData();
-  }, [conta, mes])
+  }, [conta, mes, verPorPagina])
 
   // inserir dados no gráfico
   useEffect(() => {
@@ -224,6 +231,49 @@ export default function Extratos() {
     })
   }
 
+  const formatarValor = new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  })
+
+  function filtro(e) {
+    e.preventDefault();
+    function removerAcentos(str) {
+      return str.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+    }
+    const descricaoCorrigida = removerAcentos(descricao);
+    const regex = new RegExp(`\\b${descricaoCorrigida}\\b`, "gi");
+    if (descricao === '' || descricao.length <= 0) {
+      setTransacoes(transacoesBase);
+      setFiltroSelecionado('')
+    } else {
+      setFiltroSelecionado(e.target.descricao.value);
+      const transacoesFiltradas = transacoesBase.filter((transacao) => regex.test(removerAcentos(transacao.descricao)))
+      setDescricao('');
+      setTransacoes(transacoesFiltradas)
+
+    }
+  }
+
+  function cancelarFiltro() {
+    setTransacoes(transacoesBase);
+    setFiltroSelecionado('');
+  }
+
+  function handleProximaPagina() {
+    if (paginaAtual >= qtdePagina) return
+    setMinPagina(minPagina + verPorPagina);
+    setMaxPagina(maxPagina + verPorPagina);
+    setPaginaAtual(paginaAtual + 1);
+  }
+
+  function handlePaginaAnterior() {
+    if (paginaAtual <=1) return
+    setMinPagina(minPagina - verPorPagina);
+    setMaxPagina(maxPagina - verPorPagina);
+    setPaginaAtual(paginaAtual - 1);
+  }
+
 
   const optionsGrafDespesa = {
     pieSliceTextStyle: {
@@ -266,7 +316,8 @@ export default function Extratos() {
         <Loading isLoading={isLoading} />
       ) : (
         <>
-          <br />
+          <h1 className="title">Extrato de transações</h1>
+          <hr />
           <div className="grid">
 
             <div className="col">
@@ -359,12 +410,18 @@ export default function Extratos() {
             <div className="col">
               <div className="box">
                 <div className="grid">
-                  <div className="col">
-                    <p className="control has-icons-left">
-                      <input type="text" className="input descricao" placeholder="Filtre pela descrição" />
-                      <span className="icon is-large is-left"><i className="bx bx-filter" /></span>
-                    </p>
-                    <button type="button" className="button"><i className="bx bx-search-alt" /></button>
+                  <div className="col div_pesquisa">
+                    <form onSubmit={filtro}>
+                      <p className="control has-icons-left">
+                        <input type="text" className="input descricao" name="descricao" value={descricao} onChange={(e) => setDescricao(e.target.value)} placeholder="Filtre pela descrição" />
+                        <span className="icon is-large is-left"><i className="bx bx-filter" /></span>
+                      </p>
+                      <button type="submit" className="button"><i className="bx bx-search-alt" /></button>
+                    </form>
+                    <br />
+                    {filtroSelecionado.length > 0 ? (
+                      < p className="tag is-large is-info">{filtroSelecionado}<button type="button" className="delete is-small" onClick={cancelarFiltro} /> </p>
+                    ) : ""}
                   </div>
 
                   <div className="col">
@@ -379,18 +436,24 @@ export default function Extratos() {
 
                   <div className="col">
                     <p>Quantidade por página:
-                      <select className="input">
-                        <option>20</option>
-                        <option>30</option>
-                        <option>40</option>
-                        <option>Mostrar tudo</option>
-                      </select>
+                      <br />
+                      <div className="select">
+                        <select className="input" value={verPorPagina} onChange={(e) => setVerPorPagina(e.target.value)}>
+                          <option value={10}>10</option>
+                          <option value={20}>20</option>
+                          <option value={30}>30</option>
+                        </select>
+                      </div>
                     </p>
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
 
-
-
+          <div className="grid">
+            <div className="col">
+              <div className="box">
                 {transacoes.length > 0 ? (
                   <table className="table is-hoverable is-fullwidth">
                     <thead>
@@ -403,7 +466,7 @@ export default function Extratos() {
                     </thead>
 
                     <tbody>
-                      {transacoes.map((transacao) => (
+                      {transacoes.slice(minPagina, maxPagina).map((transacao) => (
                         <tr>
                           <td>{transacao.tipo === "Receita" ? (
                             <i className='bx bxs-up-arrow' />
@@ -433,9 +496,20 @@ export default function Extratos() {
             </div>
           </div>
 
+          <div className="grid">
+            <div className="col">
+              <div className="botoes_mudar_pagina">
+                <button type="button" className="button" onClick={handlePaginaAnterior}><i className='bx bx-left-arrow-alt' /></button>
+                <p className="tag is-large">Página: {paginaAtual} de {qtdePagina}</p>
+                <button type="button" className="button" onClick={handleProximaPagina}><i className='bx bx-right-arrow-alt' /></button>
+              </div>
+            </div>
+
+          </div>
         </>
-      )}
+      )
+      }
       <Footer />
-    </div>
+    </div >
   )
 }

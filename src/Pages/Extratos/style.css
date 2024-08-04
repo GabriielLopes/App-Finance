@@ -16,8 +16,17 @@
   background-color: transparent;
 }
 
-.page_extrato .div_pesquisa {
+.page_extrato form {
   display: flex;
+}
+
+.page_extrato form button {
+  width: 50px;
+  height: 50px;
+}
+
+.page_extrato .input {
+  width: 70px;
 }
 
 .page_extrato .div-balanco {
@@ -42,3 +51,11 @@
   font-size: 18px;
 }
 
+.page_extrato .div_pesquisa input {
+  width: 400px;
+}
+
+.page_extrato .botoes_mudar_pagina {
+  display: flex;
+  margin-left: 75%;
+}
