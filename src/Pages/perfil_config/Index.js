@@ -185,10 +185,6 @@ export default function PerfilConfig() {
     infosErrors.forEach((el) => {
       el.textContent = '';
     })
-
-    document.querySelectorAll('input').forEach((el) => {
-      el.classList = 'input'
-    })
   }
 
   async function handleSubmit(e) {
@@ -220,7 +216,7 @@ export default function PerfilConfig() {
             ) : (<i className='bx bxs-user-circle' />)}
 
             <div className='grid'>
-              <div className='col' />
+
               <div className='col'>
 
                 <div className="file">
@@ -236,7 +232,7 @@ export default function PerfilConfig() {
                 </div>
               </div>
 
-              <div className='col' />
+
             </div>
           </div>
         </div>

@@ -106,10 +106,24 @@ export default function Header() {
 
 
   if (modoNoturno) {
-    document.querySelector('html').classList = `theme-dark`
+    document.querySelector('html').classList = `theme-dark`;
+    const tooltips = document.querySelectorAll('.tooltip'); // Select all tooltips
+
+    tooltips.forEach(tooltip => {
+      // eslint-disable-next-line no-param-reassign
+      tooltip.style.backgroundColor = '#000';
+    });
   } else {
-    document.querySelector('html').classList = `theme-light`
+    document.querySelector('html').classList = `theme-light`;
+    const tooltips = document.querySelectorAll('.tooltip'); // Select all tooltips
+
+    tooltips.forEach(tooltip => {
+      // eslint-disable-next-line no-param-reassign
+      tooltip.style.backgroundColor = '#fff';
+    });
   }
+
+
 
   return (
     <>
