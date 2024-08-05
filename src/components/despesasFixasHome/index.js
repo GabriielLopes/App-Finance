@@ -14,48 +14,51 @@ import history from '../../services/history';
 import './style.css';
 import DespesasFixasConfig from "../despesasFixasConfig";
 import * as actions from '../../store/modules/despesa/actions';
-import * as actionsAuth from '../../store/modules/auth/actions';
 import PagarDespesasFixas from "../pagarDespesasFixas";
 
 export default function DespesasFixasHome() {
   const dispatch = useDispatch();
-
   const [despesas, setDespesas] = useState([]);
-  const [despesasPagas, setDespesasPagas] = useState([]);
-  const [despesasPendentes, setDespesasPendentes] = useState([])
-  const [listDespesas, setListDespesas] = useState([]);
-  const [verTodasDespesas, setVerTodasDespesas] = useState(0)
   const [dropdownStates, setDropdownStates] = useState([]);
   const [conta, setConta] = useState([])
   const [categorias, setCategorias] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const mes = new Date().getUTCMonth() + 1;
   const user = useSelector((state) => state.auth.user);
 
-
-
+  // pegando informações de conta bancária
   useEffect(() => {
     async function getData() {
-      setIsLoading(true)
-      // eslint-disable-next-line consistent-return
-      const responseConta = await axios.get(`/contas/index/${user.id}`).catch((err) => {
-        if (err.response.status === 401) {
-          return dispatch(actionsAuth.loginFailure())
-        }
-      })
-      if (responseConta.data.length > 0) {
-        setConta(responseConta.data);
-        const responseDespesas = await axios.get(`/gastos-fixos/${responseConta.data[0].id}/${user.id}`)
-        setDespesas(responseDespesas.data);
-        setDespesasPagas(responseDespesas.data.filter((despesa) => despesa.qtde_parcelas === despesa.qtde_parcelas_pagas))
-        setDespesasPendentes(responseDespesas.data.filter((despesa) => despesa.qtde_parcelas_pagas < despesa.qtde_parcelas))
-
-        setListDespesas(responseDespesas.data.filter((despesa) => despesa.qtde_parcelas_pagas < despesa.qtde_parcelas))
-        setDropdownStates(responseDespesas.data.filter((despesa) => despesa.qtde_parcelas_pagas < despesa.qtde_parcelas).map(() => false))
+      try {
+        setIsLoading(true)
+        const response = await axios.get(`/contas/index/${user.id}`);
+        setConta(response.data);
+        setIsLoading(false)
+      } catch (error) {
+        setIsLoading(false)
+        setConta([]);
       }
-      setIsLoading(false)
     }
     getData()
   }, [])
+
+  // pegar dados de despesas fixas
+  useEffect(() => {
+    async function getData() {
+      try {
+        setIsLoading(true);
+        const response = await axios.get(`/gastos-fixos/${conta[0].id}/${user.id}`)
+        setDespesas(response.data.filter(despesa => new Date(despesa.data_venc).getUTCMonth() + 1 === new Date().getUTCMonth() + 1 && new Date(despesa.data_venc).getUTCFullYear() === new Date().getUTCFullYear()));
+        setDropdownStates(response.data.filter((despesa) => despesa.qtde_parcelas_pagas < despesa.qtde_parcelas).map(() => false))
+        setIsLoading(false);
+      } catch (error) {
+        setIsLoading(false);
+        setDespesas([]);
+        setDropdownStates([])
+      }
+    }
+    getData();
+  }, [conta])
 
   useEffect(() => {
     async function getData() {
@@ -71,6 +74,63 @@ export default function DespesasFixasHome() {
     }
     getData();
   }, [])
+
+  function mesAtual() {
+    switch (mes) {
+      case 1: {
+        return "Janeiro"
+      }
+
+      case 2: {
+        return "Feveiro"
+      }
+
+      case 3: {
+        return "Março"
+      }
+
+      case 4: {
+        return "Abril"
+      }
+
+      case 5: {
+        return "Maio"
+      }
+
+      case 6: {
+        return "Junho"
+      }
+
+      case 7: {
+        return "Julho"
+      }
+
+      case 8: {
+        return "Agosto"
+      }
+
+      case 9: {
+        return "Setembro"
+      }
+
+      case 10: {
+        return "Outubro"
+      }
+
+      case 11: {
+        return "Novembro"
+      }
+
+      case 12: {
+        return "Dezembro"
+      }
+
+      default: {
+        return mes
+      }
+    }
+  }
+
 
   if (isLoading === true) {
     return (
@@ -96,15 +156,6 @@ export default function DespesasFixasHome() {
     day: 'numeric'
   })
 
-  function handleChange(e) {
-    if (e.target.value === 'Todas') {
-      setListDespesas(despesas);
-    } else if (e.target.value === 'Pagas') {
-      setListDespesas(despesasPagas)
-    } else if (e.target.value === 'Pendentes') {
-      setListDespesas(despesasPendentes)
-    }
-  }
 
   function handleChangeDropDown(index) {
 
@@ -161,7 +212,6 @@ export default function DespesasFixasHome() {
         deletar(id)
       }
     })
-
   }
 
   if (conta.length === 0) {
@@ -173,18 +223,9 @@ export default function DespesasFixasHome() {
     <div className="box box-despesas">
       <DespesasFixasConfig />
       <PagarDespesasFixas />
-      <h1 className="">Contas a pagar</h1>
+      <h1 className="title">Despesas de {mesAtual()}</h1>
       <div className="grid">
         <div className="col">
-
-          <p className="control has-icons-left">
-            <select className="input" onChange={handleChange}>
-              <option value="Pendentes">Pendentes</option>
-              <option value="Pagas">Pagas</option>
-              <option value="Todas">Todas</option>
-            </select>
-            <span className="icon is-large is-left"><i className='bx bx-filter' /></span>
-          </p>
 
           <button type="button" className="button" onClick={() => dispatch(actions.novaDespesaRequest())}>
             <i className='bx bxs-file-plus' /> Adicionar
@@ -195,8 +236,8 @@ export default function DespesasFixasHome() {
       <div className="grid">
         <div className="col">
           <table className="table is-hoverable is-fullwidth is-striped">
-            {listDespesas.length <= 0 ? (
-              "Não há nada para exibir."
+            {despesas.length <= 0 ? (
+              "Não há despesas vencendo."
             ) : (
               <>
                 <thead>
@@ -209,7 +250,7 @@ export default function DespesasFixasHome() {
                   </tr>
                 </thead>
                 <tbody>
-                  {listDespesas.slice(0, verTodasDespesas + 3).map((despesa, index) => (
+                  {despesas.slice(0, 3).map((despesa, index) => (
                     <tr>
                       <td>{formatarValor.format(despesa.valor_parcela)}</td>
                       <td> <i className={categorias.filter(categoria => categoria.id === despesa.categoria_id)[0].icone} /> {despesa.nome}</td>
@@ -255,14 +296,9 @@ export default function DespesasFixasHome() {
       <div className="grid">
         <div className="col" />
         <div className="col info_vermais">
-          {verTodasDespesas < listDespesas.length ? (
-            <span className='tag is-dark is-small is-hoverable' tabIndex={0} role='button' onKeyDown={() => setVerTodasDespesas(verTodasDespesas + 5)} onClick={() => setVerTodasDespesas(verTodasDespesas + 5)} >Ver mais...</span>
-          ) : ("")}
-          {verTodasDespesas > 3 ? (
-            <span className='tag is-dark is-small is-hoverable' tabIndex={0} role='button' onKeyDown={() => setVerTodasDespesas(0)} onClick={() => setVerTodasDespesas(0)}>Ver menos...</span>
-          ) : (
-            ""
-          )}
+          <a href="/contas-a-pagar/">
+            <span className='tag is-dark is-small is-hoverable' >Ver todas as despesas</span>
+          </a>
         </div>
         <div className="col" />
       </div>

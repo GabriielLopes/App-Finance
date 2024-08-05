@@ -16,7 +16,6 @@ export default function DespesasFixasConfig() {
   // nome, valor, data_compra, data_venc, parcelado, qtde_parcelas
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
-  const auth = useSelector((state) => state.auth)
   const novaDespesa = useSelector((state) => state.despesa.novaDespesa);
 
   const [conta_id, setConta_id] = useState(0);
@@ -31,12 +30,10 @@ export default function DespesasFixasConfig() {
   const [isLoading, setIsloading] = useState(false);
   const [outraData, setOutraData] = useState(false);
 
-
   const dia = new Date().getDate()
   const mes = new Date().getMonth() + 1;
   const mesFormatado = mes.toString().padStart(2, '0');
   const ano = new Date().getFullYear();
-
   const dataAtual = `${ano}-${mesFormatado}-${dia}`
 
   const hasSymbols = (string) => {
@@ -51,34 +48,29 @@ export default function DespesasFixasConfig() {
   const listDias = [1, 2, 3, 4, 5, 6, 7,
     8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
 
-  try {
-    useEffect(() => {
-      async function getData() {
-        axios.defaults.headers.get.Authorization = `Bearer ${auth.token}`
-        // eslint-disable-next-line consistent-return
-        const responseConta = await axios.get(`/contas/index/${user.id}`).catch((err) => {
-          if (err.response.status === 400) {
-            return setConta_id(0)
-          }
-        })
-        if (responseConta) {
-          if (responseConta.data.length <= 0) {
-            return setConta_id(0);
-          }
-          const responseCategorias = await axios.get(`/categorias/`);
-          setCategorias(responseCategorias.data);
-          return setConta_id(responseConta.data[0].id)
-        }
+  useEffect(() => {
+    async function getData() {
+      try {
+        const response = await axios.get(`/contas/index/${user.id}`)
+        setConta_id(response.data[0].id);
+      } catch (error) {
+        setConta_id(0);
       }
-      getData()
-    }, [])
-  } catch (error) {
-    Swal.fire({
-      title: 'error',
-      icon: 'error',
-      text: `${error.response}`
-    })
-  }
+    }
+    getData()
+  }, [])
+
+  useEffect(() => {
+    async function getData() {
+      try {
+        const response = await axios.get('/categorias/');
+        setCategorias(response.data);
+      } catch (error) {
+        setCategorias([]);
+      }
+    }
+    getData()
+  }, [])
 
 
   function resetarForm() {

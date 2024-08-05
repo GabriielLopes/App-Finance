@@ -8,3 +8,26 @@
 .tabela-despesas button i {
   font-size: 18px;
 }
+
+.contas-a-pagar .form-contas-a-pagar {
+  display: flex;
+}
+
+.contas-a-pagar .form-contas-a-pagar input {
+  width: 450px;
+}
+
+.contas-a-pagar .form-contas-a-pagar button {
+  margin-left: 25px;
+  width: 50px;
+  height: 50px;
+}
+
+.contas-a-pagar .form-contas-a-pagar button i {
+  font-size: 25px;
+}
+
+.contas-a-pagar .botoes_mudar_pagina {
+  display: flex;
+  margin-left: 75%;
+}

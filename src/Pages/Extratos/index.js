@@ -258,6 +258,7 @@ export default function Extratos() {
   function cancelarFiltro() {
     setTransacoes(transacoesBase);
     setFiltroSelecionado('');
+    setMes(new Date().getUTCMonth() + 1);
   }
 
   function handleProximaPagina() {

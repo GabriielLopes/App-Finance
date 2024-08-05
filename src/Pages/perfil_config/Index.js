@@ -38,6 +38,7 @@ export default function PerfilConfig() {
     getData()
   }, [])
 
+
   const handleFotoChange = async (e) => {
     const foto = e.target.files[0];
 

@@ -43,6 +43,10 @@
   margin-right: 25px;
 }
 
+.btnMudarMes i {
+  font-size: 25px;
+}
+
 .page_extrato .bxs-pencil {
   font-size: 18px;
 }
