@@ -43,7 +43,7 @@ export default function GraficoCategoriaDespesa() {
               setTotalDespesas(0)
             } else {
               // eslint-disable-next-line no-return-assign, no-param-reassign
-              setTotalDespesas(responseTransacoes.data.filter((transacao) => transacao.tipo === 'Despesa').filter((transacao) => new Date(transacao.data).getUTCMonth() +1 === mes).map((transacao) => parseFloat(transacao.valor)).reduce((acumulador, valores) => acumulador += valores, 0))
+              setTotalDespesas(responseTransacoes.data.filter((transacao) => transacao.tipo === 'Despesa').filter((transacao) => new Date(transacao.data).getUTCMonth() + 1 === mes).map((transacao) => parseFloat(transacao.valor)).reduce((acumulador, valores) => acumulador += valores, 0))
             }
 
             const objDespesa = responseTransacoes.data.filter((transacao) => transacao.tipo === 'Despesa' && new Date(transacao.data).getUTCMonth() + 1 === mes && new Date(transacao.data)).filter((transacao) => new Date(transacao.data).getFullYear() === ano)
@@ -112,16 +112,14 @@ export default function GraficoCategoriaDespesa() {
     pieSliceTextStyle: {
       color: document.querySelector('.theme-light') ? 'black' : 'white',
     },
-    legend: 'true',
     backgroundColor: 'transparent',
     legendTextColor: document.querySelector('.theme-light') ? 'black' : 'white',
     pieSlice: 0.8,
-    is3d: true,
     slices: {
-      1: { offset: 0.3 },
+      1: { offset: 0.1 },
       3: { offset: 0.2 },
-      5: { offset: 0.3},
-      6: { offset: 0.2 },
+      5: { offset: 0.2 },
+      6: { offset: 0.1 },
     },
   }
 
