@@ -1,5 +1,5 @@
 import axios from 'axios';
 
 export default axios.create({
-  baseURL: 'http://localhost:3444',
+  baseURL: 'https://api-app-finance-hm6i26lii-gibilopes-projects.vercel.app/',
 });
