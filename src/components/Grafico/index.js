@@ -2,17 +2,15 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable react/jsx-no-useless-fragment */
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import Chart from "react-google-charts";
+import PropTypes from 'prop-types';
 
 import ClipLoader from "react-spinners/ClipLoader";
 
 import './style.css';
-import axios from "../../services/axios";
 
 
-export default function Grafico() {
-  const user = useSelector((state) => state.auth.user);
+export default function Grafico({ mes, transacoes }) {
   const [totalReceitas, setTotalReceitas] = useState(0);
   const [totalDespesas, setTotalDespesas] = useState(0)
   const [isLoading, setIsLoading] = useState(false);
@@ -22,26 +20,25 @@ export default function Grafico() {
     currency: 'BRL',
   })
 
-  const mes = new Date().getMonth() + 1
   const ano = new Date().getFullYear()
+
+
 
   useEffect(() => {
     async function getData() {
       try {
         setIsLoading(true);
-        const responseConta = await axios.get(`/contas/index/${user.id}`);
-        const responseTransacoes = await axios.get(`/transacoes/all/${responseConta.data[0].id}`);
-        setTotalReceitas(responseTransacoes.data.filter((transacao) => transacao.tipo === 'Receita').filter((transacao) => new Date(transacao.data).getUTCMonth() +1 === mes).map((transacao) => parseFloat(transacao.valor)).reduce((acumulador, valores) => acumulador += valores, 0))
-        setTotalDespesas(responseTransacoes.data.filter((transacao) => transacao.tipo === 'Despesa').filter((transacao) => new Date(transacao.data).getUTCMonth() +1 === mes).map((transacao) => parseFloat(transacao.valor)).reduce((acumulador, valores) => acumulador += valores, 0))
+        setTotalReceitas(transacoes.filter((transacao) => transacao.tipo === 'Receita').filter((transacao) => new Date(transacao.data).getUTCMonth() + 1 === mes).map((transacao) => parseFloat(transacao.valor)).reduce((acumulador, valores) => acumulador += valores, 0))
+        setTotalDespesas(transacoes.filter((transacao) => transacao.tipo === 'Despesa').filter((transacao) => new Date(transacao.data).getUTCMonth() + 1 === mes).map((transacao) => parseFloat(transacao.valor)).reduce((acumulador, valores) => acumulador += valores, 0))
         setIsLoading(false);
       } catch (error) {
-        setIsLoading(false)
         setTotalReceitas(0);
         setTotalDespesas(0);
+        setIsLoading(false)
       }
     }
     getData();
-  }, [totalDespesas, totalReceitas])
+  }, [mes, transacoes])
 
   if (isLoading === true) {
     return (
@@ -107,7 +104,16 @@ export default function Grafico() {
           </div>
         </div>
       </div>
-
     </div>
   )
+}
+
+Grafico.defaultProps = {
+  mes: new Date().getUTCMonth() + 1,
+  transacoes: []
+}
+
+Grafico.propTypes = {
+  mes: PropTypes.number,
+  transacoes: PropTypes.arrayOf,
 }

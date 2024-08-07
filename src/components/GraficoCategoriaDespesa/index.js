@@ -1,21 +1,13 @@
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import Chart from "react-google-charts";
-import Swal from "sweetalert2";
 import ClipLoader from "react-spinners/ClipLoader";
+import PropTypes from 'prop-types';
 
 import './style.css';
-import axios from "../../services/axios";
-import history from "../../services/history";
-import * as actionsAuth from '../../store/modules/auth/actions'
 
-const mes = new Date().getMonth() + 1
 const ano = new Date().getFullYear()
 
-export default function GraficoCategoriaDespesa() {
-  const dispatch = useDispatch();
-  const user = useSelector((state) => state.auth.user);
+export default function GraficoCategoriaDespesa({ mes, transacoes, categorias }) {
   const [totalDespesas, setTotalDespesas] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [dadosGraf, setDadosGraf] = useState([
@@ -23,77 +15,96 @@ export default function GraficoCategoriaDespesa() {
     ['Carregando...', 0]
   ])
 
-  if (user) {
-    try {
-      useEffect(() => {
-        async function getData() {
-          setIsLoading(true);
-          const responseConta = await axios.get(`/contas/index/${user.id}`).catch((err) => {
-            if (err.response.status === 401) {
-              dispatch(actionsAuth.loginFailure());
-            }
-          })
-          if (responseConta.data.length > 0) {
-            const responseTransacoes = await axios.get(`/transacoes/all/${responseConta.data[0].id}`)
-            const responseCategorias = await axios.get("/categorias/");
+  function mesAtual() {
+    switch (mes) {
+      case 1: {
+        return "Janeiro"
+      }
 
-            if (responseTransacoes.data <= 0) {
-              setTotalDespesas(0)
-            } else if (responseTransacoes.data.filter((transacao) => transacao.tipo === 'Despesa') <= 0) {
-              setTotalDespesas(0)
-            } else {
-              // eslint-disable-next-line no-return-assign, no-param-reassign
-              setTotalDespesas(responseTransacoes.data.filter((transacao) => transacao.tipo === 'Despesa').filter((transacao) => new Date(transacao.data).getUTCMonth() + 1 === mes).map((transacao) => parseFloat(transacao.valor)).reduce((acumulador, valores) => acumulador += valores, 0))
-            }
+      case 2: {
+        return "Feveiro"
+      }
 
-            const objDespesa = responseTransacoes.data.filter((transacao) => transacao.tipo === 'Despesa' && new Date(transacao.data).getUTCMonth() + 1 === mes && new Date(transacao.data)).filter((transacao) => new Date(transacao.data).getFullYear() === ano)
-              .reduce((acumulador, despesa) => {
-                const categoria = { categoria_id: despesa.categoria_id || 0 };
+      case 3: {
+        return "Março"
+      }
 
-                if (!acumulador[categoria.categoria_id]) {
-                  // eslint-disable-next-line no-param-reassign
-                  acumulador[categoria.categoria_id] = { total: 0, id: categoria.categoria_id }
+      case 4: {
+        return "Abril"
+      }
 
-                }
+      case 5: {
+        return "Maio"
+      }
 
-                // eslint-disable-next-line no-param-reassign
-                acumulador[categoria.categoria_id].total += parseFloat(despesa.valor);
-                return acumulador
-              }, [])
+      case 6: {
+        return "Junho"
+      }
 
+      case 7: {
+        return "Julho"
+      }
 
-            const dados = [["Despesas", "Valores em reais"]];
+      case 8: {
+        return "Agosto"
+      }
 
-            objDespesa.forEach((despesa) => {
-              responseCategorias.data.forEach((categoria) => {
-                if (categoria.id === despesa.id) {
-                  dados.push([`${categoria.nome}`, parseFloat(despesa.total)])
+      case 9: {
+        return "Setembro"
+      }
 
-                }
-              })
-            })
-            setDadosGraf(dados)
-          }
-          setIsLoading(false);
-        }
-        getData()
-      }, [])
-    } catch (error) {
+      case 10: {
+        return "Outubro"
+      }
 
-      const { status } = error.response;
+      case 11: {
+        return "Novembro"
+      }
 
-      if (status === 401) {
+      case 12: {
+        return "Dezembro"
+      }
 
-        dispatch(actionsAuth.loginFailure());
-        Swal.fire({
-          icon: 'error',
-          title: 'Sessão expirada!',
-          text: 'Seu login expirou, faça login novamente para acessar sua conta.'
-        });
-        history.go('/login');
+      default: {
+        return mes
       }
     }
   }
+  // Inserir dados no gráfico
+  useEffect(() => {
+    async function getData() {
+      setIsLoading(true);
+      // eslint-disable-next-line no-return-assign, no-param-reassign
+      setTotalDespesas(transacoes.filter((transacao) => transacao.tipo === 'Despesa').filter((transacao) => new Date(transacao.data).getUTCMonth() + 1 === mes).map((transacao) => parseFloat(transacao.valor)).reduce((acumulador, valores) => acumulador += valores, 0))
+      const objDespesa = transacoes.filter((transacao) => transacao.tipo === 'Despesa' && new Date(transacao.data).getUTCMonth() + 1 === mes && new Date(transacao.data)).filter((transacao) => new Date(transacao.data).getFullYear() === ano)
+        .reduce((acumulador, despesa) => {
+          const categoria = { categoria_id: despesa.categoria_id || 0 };
+
+          if (!acumulador[categoria.categoria_id]) {
+            // eslint-disable-next-line no-param-reassign
+            acumulador[categoria.categoria_id] = { total: 0, id: categoria.categoria_id }
+
+          }
+
+          // eslint-disable-next-line no-param-reassign
+          acumulador[categoria.categoria_id].total += parseFloat(despesa.valor);
+          return acumulador
+        }, [])
+
+      const dados = [["Despesas", "Valores em reais"]];
+      objDespesa.forEach((despesa) => {
+        categorias.forEach((categoria) => {
+          if (categoria.id === despesa.id) {
+            dados.push([`${categoria.nome}`, parseFloat(despesa.total)])
+
+          }
+        })
+      })
+      setDadosGraf(dados)
+      setIsLoading(false);
+    }
+    getData()
+  }, [mes, transacoes])
 
   if (isLoading === true) {
     return (
@@ -125,7 +136,9 @@ export default function GraficoCategoriaDespesa() {
 
   if (totalDespesas === 0) {
     return (
-      <p>Faça movimentações para visualizar o gráfico corretamente.</p>
+      <center>
+        <p>Não há nenhuma despesa no mês {mesAtual()}.</p>
+      </center>
     )
   }
 
@@ -133,7 +146,6 @@ export default function GraficoCategoriaDespesa() {
     <div className="col">
       <div className="grid">
         <div className="col">
-          DESPESAS POR CATEGORIA
           <center>
             <Chart
               chartType="PieChart"
@@ -147,4 +159,16 @@ export default function GraficoCategoriaDespesa() {
       </div>
     </div>
   )
+}
+
+GraficoCategoriaDespesa.defaultProps = {
+  mes: new Date().getUTCMonth() + 1,
+  transacoes: [],
+  categorias: []
+}
+
+GraficoCategoriaDespesa.propTypes = {
+  mes: PropTypes.number,
+  transacoes: PropTypes.arrayOf,
+  categorias: PropTypes.arrayOf,
 }

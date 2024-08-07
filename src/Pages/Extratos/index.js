@@ -8,8 +8,10 @@ import Swal from "sweetalert2";
 
 import './style.css';
 import axios from '../../services/axios';
+import history from '../../services/history';
 import Loading from "../../components/Loading";
 import Footer from '../../components/Footer';
+import GraficoCategoriaDespesa from '../../components/GraficoCategoriaDespesa/index';
 
 export default function Extratos() {
   const user = useSelector(state => state.auth.user);
@@ -27,7 +29,6 @@ export default function Extratos() {
   const [filtroSelecionado, setFiltroSelecionado] = useState('');
   const [mes, setMes] = useState(new Date().getUTCMonth() + 1);
   const [dadosGraf, setDadosGraf] = useState([])
-  const [dadosDespesaGraf, setDadosDespesaGraf] = useState([]);
   const ano = new Date().getUTCFullYear();
 
 
@@ -156,42 +157,6 @@ export default function Extratos() {
     inserirDadosGraf()
   }, [conta, mes, transacoes])
 
-  // inserir dados no gráfico de despesas
-  useEffect(() => {
-    function inserirDadosGrafDespesa() {
-      if (transacoes.length > 0) {
-        const objDespesa = transacoes.filter((transacao) => transacao.tipo === 'Despesa' && new Date(transacao.data).getUTCMonth() + 1 === mes && new Date(transacao.data)).filter((transacao) => new Date(transacao.data).getFullYear() === ano)
-          .reduce((acumulador, despesa) => {
-            const categoria = { categoria_id: despesa.categoria_id || 0 };
-            if (!acumulador[categoria.categoria_id]) {
-              // eslint-disable-next-line no-param-reassign
-              acumulador[categoria.categoria_id] = { total: 0, id: categoria.categoria_id }
-
-            }
-
-            // eslint-disable-next-line no-param-reassign
-            acumulador[categoria.categoria_id].total += parseFloat(despesa.valor);
-            return acumulador
-          }, [])
-
-
-        const dados = [["Despesas", "Valores em reais"]];
-
-        objDespesa.forEach((despesa) => {
-          categorias.forEach((categoria) => {
-            if (categoria.id === despesa.id) {
-              dados.push([`${categoria.nome}`, parseFloat(despesa.total)])
-
-            }
-          })
-        })
-        setDadosDespesaGraf(dados)
-      }
-    }
-    inserirDadosGrafDespesa();
-  }, [conta, mes, transacoes])
-
-
   function setMesAnterior() {
     if (mes <= 1) return
     setMes(mes - 1)
@@ -220,7 +185,9 @@ export default function Extratos() {
             title: 'Sucesso!',
             text: 'A transação foi excluída com sucesso! O saldo já foi atualizado.'
           })
+          history.go('/')
         } catch (error) {
+          setIsLoading(false);
           Swal.fire({
             icon: 'error',
             title: 'Erro!',
@@ -393,13 +360,7 @@ export default function Extratos() {
                 <center><p>Mês de {mesAtual()} - <strong>Despesas</strong></p></center>
                 {transacoes.length > 0 ? (
                   <center>
-                    <Chart
-                      chartType="PieChart"
-                      options={optionsGrafDespesa}
-                      data={dadosDespesaGraf}
-                      width={350}
-                      height={180}
-                    />
+                    <GraficoCategoriaDespesa mes={mes} transacoes={transacoes} categorias={categorias} />
                   </center>
                 ) : (
                   <>

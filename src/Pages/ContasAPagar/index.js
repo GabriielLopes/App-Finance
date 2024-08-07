@@ -293,7 +293,7 @@ export default function ContasAPagar() {
           <div className="col">
             <center>
               <button type="button" className="button btnMudarMes" onClick={handleMesAnterior}><i className='bx bx-left-arrow-alt' /></button>
-              <label className="tag is-large is-info">{mesAtual()}</label>
+              <label className="tag is-large is-info"><i className="bx bx-calendar" /> {mesAtual()}</label>
               <button type="button" className="button btnMudarMes" onClick={handleMesAcima}><i className='bx bx-right-arrow-alt' /></button>
             </center>
           </div>
