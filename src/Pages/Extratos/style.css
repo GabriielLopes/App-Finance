@@ -29,6 +29,10 @@
   width: 70px;
 }
 
+.page_extrato .input.filter-tipo {
+  width: 150px;
+}
+
 .page_extrato .div-balanco {
   justify-content: center;
   text-align: center;

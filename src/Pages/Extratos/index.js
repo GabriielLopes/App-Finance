@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable no-return-assign */
 /* eslint-disable no-param-reassign */
 /* eslint-disable jsx-a11y/control-has-associated-label */
@@ -29,6 +30,7 @@ export default function Extratos() {
   const [filtroSelecionado, setFiltroSelecionado] = useState('');
   const [mes, setMes] = useState(new Date().getUTCMonth() + 1);
   const [dadosGraf, setDadosGraf] = useState([])
+  const [filtroTipo, setFiltroTipo] = useState('');
   const ano = new Date().getUTCFullYear();
 
 
@@ -222,6 +224,19 @@ export default function Extratos() {
     }
   }
 
+  function handleChangeTipo(e) {
+    setFiltroTipo(e.target.value);
+    e.target.addEventListener("input", handleChangeTipo);
+    if (filtroTipo === "Receitas") {
+      setTransacoes(transacoesBase.filter(transacao => transacao.tipo === 'Receita'))
+    } else if (filtroTipo === "Despesas") {
+      setTransacoes(transacoesBase.filter(transacao => transacao.tipo === 'Despesa'))
+    } else if (filtroTipo === "Todas") {
+      setTransacoes(transacoesBase);
+    }
+    e.target.addEventListener("input", handleChangeTipo);
+  }
+
   function cancelarFiltro() {
     setTransacoes(transacoesBase);
     setFiltroSelecionado('');
@@ -317,12 +332,8 @@ export default function Extratos() {
                           <br />
                           Despesas: <strong>{formatarValor.format(parseFloat(transacoes.filter((transacao) => transacao.tipo === 'Despesa').map((transacao) => parseFloat(transacao.valor)).reduce((valores, acumulador) => acumulador += valores, 0)))}</strong>
                         </p>
-
-
                       </center>
-
                     </div>
-
                   </div>
                 ) : (
                   <>
@@ -376,6 +387,7 @@ export default function Extratos() {
           <div className="grid">
             <div className="col">
               <div className="box">
+
                 <div className="grid">
                   <div className="col div_pesquisa">
                     <form onSubmit={filtro}>
@@ -412,6 +424,23 @@ export default function Extratos() {
                         </select>
                       </div>
                     </p>
+                  </div>
+                </div>
+
+                <div className="grid">
+                  <div className="col">
+                    <label className="label">
+                      Filtrar por tipo:
+                      <br />
+                      <div className="select">
+                        <select className="input filter-tipo" value={filtroTipo} onClick={handleChangeTipo} onChange={handleChangeTipo}>
+
+                          <option value="Todas">Todas</option>
+                          <option value="Receitas">Receitas</option>
+                          <option value="Despesas">Despesas</option>
+                        </select>
+                      </div>
+                    </label>
                   </div>
                 </div>
               </div>

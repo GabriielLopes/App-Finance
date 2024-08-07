@@ -1,3 +1,5 @@
+/* eslint-disable no-return-assign */
+/* eslint-disable no-param-reassign */
 /* eslint-disable react/jsx-no-useless-fragment */
 /* eslint-disable camelcase */
 /* eslint-disable jsx-a11y/control-has-associated-label */
@@ -226,10 +228,13 @@ export default function DespesasFixasHome() {
       <h1 className="title">Despesas de {mesAtual()}</h1>
       <div className="grid">
         <div className="col">
-
           <button type="button" className="button" onClick={() => dispatch(actions.novaDespesaRequest())}>
             <i className='bx bxs-file-plus' /> Adicionar
           </button>
+        </div>
+
+        <div className="col">
+          <p className="tag is-large is-danger">Total: {formatarValor.format(despesas.map((despesa) => parseFloat(despesa.valor_parcela)).reduce((valores, acumulador) => acumulador += valores, 0))}</p>
         </div>
       </div>
 
@@ -237,7 +242,7 @@ export default function DespesasFixasHome() {
         <div className="col">
           <table className="table is-hoverable is-fullwidth is-striped">
             {despesas.length <= 0 ? (
-              "Não há despesas vencendo."
+              "Não há despesas vencendo no mês."
             ) : (
               <>
                 <thead>

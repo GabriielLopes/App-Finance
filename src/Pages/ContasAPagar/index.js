@@ -1,3 +1,5 @@
+/* eslint-disable no-return-assign */
+/* eslint-disable no-param-reassign */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useState } from "react";
@@ -322,6 +324,22 @@ export default function ContasAPagar() {
               </select>
             </div>
           </div>
+
+          <div className="col">
+            <p className="label">
+              Total para pagar no mês:
+              <br />
+            <label className="tag is-large is-danger">{formatarValor.format(despesasFixas.map((despesa) => parseFloat(despesa.valor_parcela)).reduce((valores, acumulador) => acumulador += valores, 0))}</label>
+            </p>
+          </div>
+
+          <div className="col">
+            <p className="label">
+              Valor total das compras:
+              <br />
+              <label className="tag is-large is-danger">{formatarValor.format(despesasFixas.map((despesa) => parseFloat(despesa.valor)).reduce((valores, acumulador) => acumulador += valores, 0))}</label>
+            </p>
+          </div>
         </div>
       </div>
 
@@ -334,6 +352,7 @@ export default function ContasAPagar() {
                   <tr>
                     <th />
                     <th>NOME</th>
+                    <th>VALOR DA PARCELA</th>
                     <th>VALOR</th>
                     <th>PARCELAS</th>
                     <th>DATA DE VENCIMENTO</th>
@@ -348,6 +367,7 @@ export default function ContasAPagar() {
                     <tr>
                       <td><i className={categorias.filter((categoria) => categoria.id === despesa.categoria_id)[0].icone} /></td>
                       <th>{despesa.nome}</th>
+                      <th>{formatarValor.format(despesa.valor_parcela)}</th>
                       <th>{formatarValor.format(despesa.valor)}</th>
                       <th>{despesa.qtde_parcelas_pagas} de {despesa.qtde_parcelas}</th>
                       <td>{formatarData.format(new Date(`${new Date(despesa.data_venc).getFullYear()}-${new Date(despesa.data_venc).getMonth() + 1}-${new Date(despesa.data_venc).getDate() + 1}`))}</td>
