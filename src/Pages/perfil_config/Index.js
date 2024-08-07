@@ -29,11 +29,16 @@ export default function PerfilConfig() {
 
   useEffect(() => {
     async function getData() {
-      setIsLoading(true)
-      axios.defaults.headers.get.Authorization = `Bearer ${auth.token}`
-      const response = await axios.get(`/fotos/${user.id}`);
-      setFotoUser(response.data);
-      setIsLoading(false)
+      try {
+        setIsLoading(true)
+        axios.defaults.headers.get.Authorization = `Bearer ${auth.token}`
+        const response = await axios.get(`/fotos/${user.id}`);
+        setFotoUser(response.data);
+        setIsLoading(false)
+      } catch (error) {
+        setIsLoading(false);
+        setFotoUser([]);
+      }
     }
     getData()
   }, [])
@@ -68,7 +73,7 @@ export default function PerfilConfig() {
       Swal.fire({
         title: 'erro!',
         icon: 'erro',
-        text: err.response.data.errors,
+        text: err.response,
       });
 
       if (status === 401) {

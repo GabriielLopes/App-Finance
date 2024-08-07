@@ -24,9 +24,9 @@ export default function AddContaBancaria() {
   const [tipo, setTipo] = useState('');
   const [saldo, setSaldo] = useState(0);
   const images = [[
-    'http://localhost:3444/images/imagem_1.png'],
-  ['http://localhost:3444/images/imagem_2.png'],
-  ['http://localhost:3444/images/imagem_3.png']
+    'https://api-finance-zeta.vercel.app/images/imagem_1.png'],
+  ['https://api-finance-zeta.vercel.app/images/imagem_2.png'],
+  ['https://api-finance-zeta.vercel.app/images/imagem_3.png']
   ];
 
 
