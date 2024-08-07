@@ -4,7 +4,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import Chart from "react-google-charts";
 import Swal from "sweetalert2";
 
 import './style.css';
@@ -13,6 +12,7 @@ import history from '../../services/history';
 import Loading from "../../components/Loading";
 import Footer from '../../components/Footer';
 import GraficoCategoriaDespesa from '../../components/GraficoCategoriaDespesa/index';
+import Grafico from '../../components/Grafico/index';
 
 export default function Extratos() {
   const user = useSelector(state => state.auth.user);
@@ -29,7 +29,6 @@ export default function Extratos() {
   const [paginaAtual, setPaginaAtual] = useState(1);
   const [filtroSelecionado, setFiltroSelecionado] = useState('');
   const [mes, setMes] = useState(new Date().getUTCMonth() + 1);
-  const [dadosGraf, setDadosGraf] = useState([])
   const [filtroTipo, setFiltroTipo] = useState('');
   const ano = new Date().getUTCFullYear();
 
@@ -147,18 +146,6 @@ export default function Extratos() {
     getData();
   }, [conta, mes, verPorPagina])
 
-  // inserir dados no gráfico
-  useEffect(() => {
-    async function inserirDadosGraf() {
-      setDadosGraf([
-        ["Receita", "Valores em reais"],
-        [`Receita`, parseFloat(transacoes.filter((transacao) => transacao.tipo === 'Receita').map((transacao) => parseFloat(transacao.valor)).reduce((valores, acumulador) => acumulador += valores, 0))],
-        ['Despesa', parseFloat(transacoes.filter((transacao) => transacao.tipo === 'Despesa').map((transacao) => parseFloat(transacao.valor)).reduce((valores, acumulador) => acumulador += valores, 0))]
-      ])
-    }
-    inserirDadosGraf()
-  }, [conta, mes, transacoes])
-
   function setMesAnterior() {
     if (mes <= 1) return
     setMes(mes - 1)
@@ -262,42 +249,6 @@ export default function Extratos() {
     setMaxPagina(e.target.value);
   }
 
-
-  const optionsGrafDespesa = {
-    pieSliceTextStyle: {
-      color: document.querySelector('.theme-light') ? 'black' : 'white',
-    },
-    legend: 'true',
-    backgroundColor: 'transparent',
-    legendTextColor: document.querySelector('.theme-light') ? 'black' : 'white',
-    pieSlice: 0.8,
-    is3d: true,
-    slices: {
-      1: { offset: 0.1 },
-      2: { offset: 0.0 },
-      3: { offset: 0.1 },
-      4: { offset: 0.2 },
-    },
-  }
-
-  const optionsBalancoMensal = {
-    colors: ["red", "blue"],
-    legend: 'none',
-    gridLines: {
-      horizontal: false,
-      vertical: false,
-    },
-    animation: {
-      duration: 500,
-      easing: "out",
-      startup: true,
-    },
-    backgroundColor: 'transparent',
-    titleColor: document.querySelector('.theme-light') ? 'black' : 'white',
-    legendTextColor: document.querySelector('.theme-light') ? 'black' : 'white',
-    title: `BALANÇO PATRIMONIAL ${mes}/${ano}`
-  }
-
   return (
     <div className="pages_content page_extrato">
       {isLoading ? (
@@ -309,61 +260,22 @@ export default function Extratos() {
           <div className="grid">
 
             <div className="col">
-              <div className="box div-balanco">
-                Balanço do mês de <strong>{mesAtual()}</strong>
                 <br />
 
                 {transacoes.length > 0 ? (
                   <div className="grid">
                     <div className="col">
                       <center>
-                        <Chart
-                          chartType="ColumnChart"
-                          data={[
-                            ['Balanço mensasl', 'Despesas', 'Receitas'],
-                            ['', parseFloat(transacoes.filter((transacao) => transacao.tipo === 'Despesa').map((transacao) => parseFloat(transacao.valor)).reduce((valores, acumulador) => acumulador += valores, 0)), parseFloat(transacoes.filter((transacao) => transacao.tipo === 'Receita').map((transacao) => parseFloat(transacao.valor)).reduce((valores, acumulador) => acumulador += valores, 0))]
-                          ]}
-                          options={optionsBalancoMensal}
-                          width={300}
-                          height={135}
-                        />
-                        <p>
-                          Receitas: <strong>{formatarValor.format(parseFloat(transacoes.filter((transacao) => transacao.tipo === 'Receita').map((transacao) => parseFloat(transacao.valor)).reduce((valores, acumulador) => acumulador += valores, 0)))}</strong>
-                          <br />
-                          Despesas: <strong>{formatarValor.format(parseFloat(transacoes.filter((transacao) => transacao.tipo === 'Despesa').map((transacao) => parseFloat(transacao.valor)).reduce((valores, acumulador) => acumulador += valores, 0)))}</strong>
-                        </p>
+                        <Grafico mes={mes} transacoes={transacoes} />
                       </center>
                     </div>
                   </div>
                 ) : (
-                  <>
+                  <div className="box">
                     <hr />
                     <center><p>Não há movimentações nesse perído.</p></center>
-                  </>
+                  </div>
                 )}
-              </div>
-            </div>
-
-            <div className="col">
-              <div className="box">
-                <center>Mês de {mesAtual()} - <strong>Receitas x Despesas</strong></center>
-                {transacoes.length > 0 ? (
-                  <center>
-                    <Chart
-                      chartType="PieChart"
-                      options={optionsGrafDespesa}
-                      data={dadosGraf}
-                      width={350}
-                      height={180}
-                    />
-                  </center>
-                ) : (
-                  <>
-                    <hr />
-                    <center><p>Não há movimentações nesse perído.</p></center>
-                  </>
-                )}
-              </div>
             </div>
 
             <div className="col">
