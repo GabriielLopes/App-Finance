@@ -94,7 +94,6 @@ export default function DepositarMetasFinanceiras() {
     dispatch(actionsMetas.depositarMetasFailure())
   }
 
-
   async function handleSubmit(e) {
     e.preventDefault();
 
@@ -106,11 +105,11 @@ export default function DepositarMetasFinanceiras() {
       })
     }
 
-    if (valor + metaFinanceira.metaFinanceira.saldo_meta > metaFinanceira.metaFinanceira.valor_meta) {
+    if (valor + parseFloat(metaFinanceira.metaFinanceira.saldo_meta) > parseFloat(metaFinanceira.metaFinanceira.valor_meta)) {
       return Swal.fire({
         title: 'Erro',
         icon: 'error',
-        text: `Só faltam ${formatarValor.format(metaFinanceira.metaFinanceira.valor_meta - metaFinanceira.metaFinanceira.saldo_meta)}. Você não pode depositar mais que isso!`
+        text: `Só faltam ${formatarValor.format(parseFloat(metaFinanceira.metaFinanceira.valor_meta) - parseFloat(metaFinanceira.metaFinanceira.saldo_meta))}. Você não pode depositar mais que isso!`
       })
     }
 
@@ -180,6 +179,7 @@ export default function DepositarMetasFinanceiras() {
       })
     }
   }
+
 
   if (isLoading) {
     return <Loading isLoading={isLoading} />

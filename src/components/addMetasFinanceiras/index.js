@@ -51,7 +51,8 @@ export default function AddMetasFinanceiras() {
   useEffect(() => {
     async function getData() {
       const response = await axios.get('/categorias/');
-      setCategorias(response.data)
+      setCategorias(response.data.filter((categoria) => categoria.nome !== "Salário" && categoria.nome !== "Serviços"));
+      
     }
     getData()
   }, [])
@@ -199,7 +200,7 @@ export default function AddMetasFinanceiras() {
                 Nome do objetivo:
                 <p className="control has-icons-left">
                   <input type="text" name="descricao" className="input descricao" placeholder="Ex: Casa, Carro e etc..." value={descricao} onChange={(e) => validaDescricao(e)} />
-                  <span className="icon is-large is-left"><i className='bx bx-message-square' /></span>
+                  <span className="icon is-large is-left"><i className='bx bx-label' /></span>
                 </p>
                 <div className="content is-small">
                   <p className="info-erro erro-nome" />

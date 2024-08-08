@@ -52,7 +52,7 @@ export default function AddPlanejamentoMensal() {
       try {
         setIsLoading(true);
         const responseCategorias = await axios.get(`/categorias/`);
-        setCategorias(responseCategorias.data);
+        setCategorias(responseCategorias.data.filter((categoria) => categoria.nome !== "Salário" && categoria.nome !== "Serviços"));
         if (addPlanejamentoMensal) {
           const responsePlanejamentoMensal = await axios.get(`planejamento-mensal/${user.id}`);
           setPlanejamentoMensal(responsePlanejamentoMensal.data.planejamentoMensal[0]);
@@ -75,7 +75,6 @@ export default function AddPlanejamentoMensal() {
     }
     getData()
   }, [addPlanejamentoMensal])
-
 
   useEffect(() => {
     async function getData() {
@@ -123,7 +122,6 @@ export default function AddPlanejamentoMensal() {
           <div className="grid">
             <div className="col">
               <h1>Oops!</h1>
-
               <label className="label">
                 Você ainda não cadastrou nenhuma conta bancária!
                 <br />
@@ -265,21 +263,32 @@ export default function AddPlanejamentoMensal() {
           try {
             setIsLoading(true);
             await axios.delete(`/planejamento-mensal/${id}`);
+            setIsLoading(false);
             Swal.fire({
               icon: 'success',
               title: 'Sucesso!',
               text: 'Planejamento mensal deletado com sucesso!',
+            }).then((resultado) => {
+              if (resultado.isConfirmed) {
+                handleCancel();
+                history.go('/')
+              }
             })
-            handleCancel();
-            history.go('/')
-            setIsLoading(false);
           } catch (error) {
             setIsLoading(false);
-            Swal.fire({
-              icon: 'error',
-              title: 'Erro!',
-              text: error.response.data.errors,
-            })
+            if (error.code === "ERR_NETWORK") {
+              Swal.fire({
+                icon: 'warning',
+                title: 'Oops!',
+                text: 'Você ainda tem despesas categorizadas. Exclua todas antes de excluir o seu planejamento.'
+              })
+            } else {
+              Swal.fire({
+                icon: 'error',
+                title: 'Erro!',
+                text: error.response.data.errors || 'Erro!',
+              })
+            }
           }
         }
         deletar()
@@ -287,8 +296,7 @@ export default function AddPlanejamentoMensal() {
     })
   }
 
-
-  if (planejamentoMensal.id >0 > 0 && addPlanejamentoMensal === true) {
+  if (planejamentoMensal.id > 0 > 0 && addPlanejamentoMensal === true) {
     return (
       <div className="divAddPlanejamentoMensal">
         {isLoading === true ? (
@@ -363,10 +371,19 @@ export default function AddPlanejamentoMensal() {
                     <p className="control has-icons-left">
                       <select className="input select" name="categoria_id" onChange={(e) => setCategoria_id(Number(e.target.value))}>
                         <option>Selecione a categoria</option>
-                        {categorias.map((categoria) => (
-                          <option key={categoria.id} value={categoria.id}>{categoria.nome}</option>
-                        ))}
-
+                        {planejamentoMensalCategorias.length > 0 ? (
+                          (
+                            categorias.filter((categoria) => !planejamentoMensalCategorias.some((planejamento) => planejamento.categoria_id === categoria.id)).map((categoria) => (
+                              <option key={categoria.id} value={categoria.id}>
+                                {categoria.nome}
+                              </option>
+                            ))
+                          )
+                        ) : (
+                          (categorias.map((categoria) => (
+                            <option key={categoria.id} value={categoria.id}>{categoria.nome}</option>
+                          )))
+                        )}
                       </select>
                       {categoria_id > 0 ? (
                         <span className="icon icon-categoria is-large is-left"><i className={categorias.filter(categoria => categoria.id === categoria_id)[0].icone} /></span>

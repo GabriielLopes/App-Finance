@@ -258,24 +258,22 @@ export default function Extratos() {
           <h1 className="title">Extrato de transações</h1>
           <hr />
           <div className="grid">
-
             <div className="col">
-                <br />
-
-                {transacoes.length > 0 ? (
-                  <div className="grid">
-                    <div className="col">
-                      <center>
-                        <Grafico mes={mes} transacoes={transacoes} />
-                      </center>
-                    </div>
+              <br />
+              {transacoes.length > 0 ? (
+                <div className="grid">
+                  <div className="col">
+                    <center>
+                      <Grafico mes={mes} transacoes={transacoes} />
+                    </center>
                   </div>
-                ) : (
-                  <div className="box">
-                    <hr />
-                    <center><p>Não há movimentações nesse perído.</p></center>
-                  </div>
-                )}
+                </div>
+              ) : (
+                <div className="box">
+                  <hr />
+                  <center><p>Não há movimentações nesse perído.</p></center>
+                </div>
+              )}
             </div>
 
             <div className="col">
@@ -386,7 +384,7 @@ export default function Extratos() {
                             {categorias.filter(categoria => categoria.id === parseFloat(transacao.categoria_id))[0].nome}
                           </td>
                           <td><strong>{formatarValor.format(transacao.valor)}</strong></td>
-                          <td>{formatarData.format(new Date(transacao.data))}</td>
+                          <td>{formatarData.format(new Date(`${new Date(transacao.data).getUTCFullYear()}-${new Date(transacao.data).getUTCMonth() +1 }-${new Date(transacao.data).getUTCDate()}`))}</td>
                           <td>
                             <button type="button" className="button" onClick={() => handleDelete(transacao.id)}><i className="bx bxs-trash" /></button>
                           </td>

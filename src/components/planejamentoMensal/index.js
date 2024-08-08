@@ -17,7 +17,6 @@ import history from '../../services/history';
 export default function PlanejamentoMensal() {
   const dispatch = useDispatch();
   const user = useSelector(state => state.auth.user);
-  // eslint-disable-next-line no-unused-vars
   const [planejamentoMensal, setPlanejamentoMensal] = useState([]);
   const [planejemanetoMensalCategorias, setPlanejamentoMensalCategorias] = useState([]);
   const [categorias, setCategorias] = useState([]);
@@ -36,6 +35,7 @@ export default function PlanejamentoMensal() {
     currency: 'BRL',
   })
 
+  // Dados categoria
   useEffect(() => {
     async function getData() {
       try {
@@ -51,13 +51,13 @@ export default function PlanejamentoMensal() {
     getData();
   }, [])
 
+  // dados de planejamentoMensal
   useEffect(() => {
     async function getData() {
       try {
         setIsLoading(true)
         const response = await axios.get(`/planejamento-mensal/${user.id}`)
         setPlanejamentoMensal(response.data.planejamentoMensal[0])
-
         const responsePlanejamentoCategorias = await axios.get(`/planejamento-mensal-categorias/${response.data.planejamentoMensal[0].id}`)
         setPlanejamentoMensalCategorias(responsePlanejamentoCategorias.data)
         setQtdePagina(Math.ceil(responsePlanejamentoCategorias.data.length / 3))
@@ -74,6 +74,7 @@ export default function PlanejamentoMensal() {
     getData()
   }, [])
 
+  // dados de transacoes
   useEffect(() => {
     async function getData() {
       try {
@@ -152,47 +153,47 @@ export default function PlanejamentoMensal() {
 
       {planejamentoMensal.id > 0 ? (
         <>
-      <div className="grid">
+          <div className="grid">
 
-        <div className="col">
-          <div className="notification">
-            <label className="label">
-              <i className='bx bx-dollar-circle' />
-              Seu orçamento mensal é de:
-              <br />
-              <strong className="infoEconomizar planejamentoMensal">{formatarValor.format(planejamentoMensal.valor_maximo)}</strong>
-            </label>
+            <div className="col">
+              <div className="notification">
+                <label className="label">
+                  <i className='bx bx-dollar-circle' />
+                  Seu orçamento mensal é de:
+                  <br />
+                  <strong className="infoEconomizar planejamentoMensal">{formatarValor.format(planejamentoMensal.valor_maximo)}</strong>
+                </label>
+              </div>
+
+            </div>
+
+            <div className="col">
+              <div className="notification">
+                <label className="label">
+                  <i className='bx bx-coin-stack' />
+                  Você guardou:
+                  <br />
+                  <strong className="infoEconomizar planejamentoMensal">{formatarValor.format((planejamentoMensal.porcentagem_economizar / 100) * planejamentoMensal.salario)}</strong>
+                </label>
+              </div>
+            </div>
           </div>
 
-        </div>
+          <div className="grid">
+            <div className="col">
+              <div className="notification">
+                <label className="label">
+                  <i className='bx bx-info-circle' />
+                  Ainda restam:
+                  <p className="infoValorSemCategorizar">{formatarValor.format(parseFloat(planejamentoMensal.valor_maximo) - parseFloat(transacoes.filter((transacao) => transacao.tipo === 'Despesa' && new Date(transacao.data).getUTCMonth() + 1 === mes && new Date(transacao.data).getUTCFullYear() === ano).map((transacao) => parseFloat(transacao.valor)).reduce((acumulador, valores) => acumulador += valores, 0)))}</p>
+                </label>
+              </div>
+            </div>
 
-        <div className="col">
-          <div className="notification">
-            <label className="label">
-              <i className='bx bx-coin-stack' />
-              Você guardou:
-              <br />
-              <strong className="infoEconomizar planejamentoMensal">{formatarValor.format((planejamentoMensal.porcentagem_economizar / 100) * planejamentoMensal.salario)}</strong>
-            </label>
+            <div className="col">
+              <button type="button" className="button btnaddplanejamento" onClick={() => dispatch(actionsPlanejamento.novoPlanejamentoMensalRequest())}><i className='bx bx-pencil' /> Editar</button>
+            </div>
           </div>
-        </div>
-      </div>
-
-      <div className="grid">
-        <div className="col">
-          <div className="notification">
-            <label className="label">
-              <i className='bx bx-info-circle' />
-              Ainda restam:
-              <p className="infoValorSemCategorizar">{formatarValor.format(parseFloat(planejamentoMensal.valor_maximo - transacoes.filter((transacao) => transacao.tipo === 'Despesa' && new Date(transacao.data).getMonth() + 1 === mes && new Date(transacao.data)).filter((transacao) => new Date(transacao.data).getFullYear() === ano).map((transacao) => parseFloat(transacao.valor)).reduce((acumulador, valores) => acumulador += valores, 0)))}</p>
-            </label>
-          </div>
-        </div>
-
-        <div className="col">
-          <button type="button" className="button btnaddplanejamento" onClick={() => dispatch(actionsPlanejamento.novoPlanejamentoMensalRequest())}><i className='bx bx-pencil' /> Editar</button>
-        </div>
-      </div>
 
           <div className="grid">
             <div className="table tabelaPlanejamentos">
@@ -216,7 +217,7 @@ export default function PlanejamentoMensal() {
                         <td><strong>{formatarValor.format(parseFloat(planejamento.valor_maximo))}</strong></td>
                         <td>{formatarValor.format(transacoes.filter((transacao) => transacao.tipo === 'Despesa' && new Date(transacao.data).getUTCMonth() + 1 === mes).filter((transacao) => transacao.categoria_id === planejamento.categoria_id).map((transacao) => parseFloat(transacao.valor)).reduce((acumulador, valores) => acumulador += valores, 0))}</td>
                         <td> <p>
-                          Restam <strong>{formatarValor.format(transacoes.filter((transacao) => transacao.tipo === 'Despesa' && new Date(transacao.data).getUTCMonth() + 1 === mes).filter((transacao) => transacao.categoria_id === planejamento.categoria_id).map((transacao) => parseFloat(transacao.valor)).reduce((acumulador, valores) => acumulador += valores, 0))}</strong>
+                          Restam <strong>{formatarValor.format(parseFloat(planejamento.valor_maximo) - transacoes.filter((transacao) => transacao.tipo === 'Despesa' && new Date(transacao.data).getUTCMonth() + 1 === mes && new Date(transacao.data).getUTCFullYear() === ano).filter((transacao) => transacao.categoria_id === planejamento.categoria_id).map((transacao) => parseFloat(transacao.valor)).reduce((acumulador, valores) => acumulador += valores, 0))}</strong>
                           <progress value={(transacoes.filter((transacao) => transacao.tipo === 'Despesa' && new Date(transacao.data).getUTCMonth() + 1 === mes).filter((transacao) => transacao.categoria_id === planejamento.categoria_id).map((transacao) => parseFloat(transacao.valor)).reduce((acumulador, valores) => acumulador += valores, 0)).toFixed(2)} max={parseFloat(planejamento.valor_maximo)} />
                           <br />
                           {(((transacoes.filter((transacao) => transacao.tipo === 'Despesa' && new Date(transacao.data).getMonth() + 1 === mes).filter((transacao) => transacao.categoria_id === planejamento.categoria_id).map((transacao) => parseFloat(transacao.valor)).reduce((acumulador, valores) => acumulador += valores, 0)) / parseFloat(planejamento.valor_maximo)) * 100).toFixed(2)}%
@@ -257,13 +258,13 @@ export default function PlanejamentoMensal() {
         </>
       ) : (
         <div className="grid">
-            <div className="col">
-              <button type="button" className="button btnaddplanejamento" onClick={() => dispatch(actionsPlanejamento.novoPlanejamentoMensalRequest())}><i className='bx bx-plus' /> Novo</button>
-              <center><p>
-                Ainda não há nenhum planejamento mensal para exibir! <i className="bx bx-confused" />
-              </p> </center>
-            </div>
+          <div className="col">
+            <button type="button" className="button btnaddplanejamento" onClick={() => dispatch(actionsPlanejamento.novoPlanejamentoMensalRequest())}><i className='bx bx-plus' /> Novo</button>
+            <center><p>
+              Ainda não há nenhum planejamento mensal para exibir! <i className="bx bx-confused" />
+            </p> </center>
           </div>
+        </div>
       )}
 
 

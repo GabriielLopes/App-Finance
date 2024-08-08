@@ -136,7 +136,7 @@ export default function DetalhesMetasFinanceiras() {
                   Objetivo:
                 </label>
                 <label className="tag is-large is-info">
-                  <span className="icon is-large is-left"><i className='bx bx-message-square' /></span>
+                  <span className="icon is-large is-left"><i className='bx bx-label' /></span>
                   {metaFinanceira.descricao}
                 </label>
               </div>

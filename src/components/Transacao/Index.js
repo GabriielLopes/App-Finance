@@ -1,9 +1,5 @@
-/* eslint-disable react/style-prop-object */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-return-assign */
 /* eslint-disable consistent-return */
-/* eslint-disable object-shorthand */
 /* eslint-disable camelcase */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useEffect, useState } from "react";
@@ -15,7 +11,6 @@ import './style.css';
 import axios from "../../services/axios";
 import history from '../../services/history';
 import * as actions from '../../store/modules/transacao/actions';
-import * as actionsAuth from '../../store/modules/auth/actions';
 import Loading from "../Loading";
 
 export default function Transacao() {
@@ -41,46 +36,57 @@ export default function Transacao() {
   const [errors, setErrors] = useState(false);
   // eslint-disable-next-line react/jsx-no-useless-fragment
 
-  const dia = new Date().getDate()
-  const mes = new Date().getMonth() + 1;
+  const dia = new Date().getUTCDate()
+  const mes = new Date().getUTCMonth() + 1;
   const mesFormatado = mes.toString().padStart(2, '0');
-  const ano = new Date().getFullYear();
+  const ano = new Date().getUTCFullYear();
 
   const dataAtual = `${ano}-${mesFormatado}-${dia}`
 
 
-  try {
-    useEffect(() => {
-      async function getData() {
-        setIsLoading(true)
-        if (novaTransacao) {
-          const responseConta = await axios.get(`/contas/index/${user.id}`);
-          if (responseConta.data.length > 0) {
-            setConta(responseConta.data);
-            setConta_id(responseConta.data[0].id)
-            const responseCategorias = await axios.get(`/categorias/`);
-            setCategorias(responseCategorias.data);
-          }
+  // pegar dados de conta bancária
+  useEffect(() => {
+    async function getData() {
+      try {
+        setIsLoading(true);
+        const response = await axios.get(`/contas/index/${user.id}`);
+        setConta(response.data);
+        setConta_id(response.data[0].id);
+        setIsLoading(false);
+      } catch (error) {
+        setConta([]);
+        setConta_id('');
+        setIsLoading(false);
+      }
+    }
+    getData();
+  }, [novaTransacao])
+
+  // pegar dados de categoria
+  useEffect(() => {
+    async function getData() {
+      try {
+        setIsLoading(true);
+        const response = await axios.get('/categorias/');
+        if (tipo === 'Receita') {
+          const categoriasReceitas = []
+          categoriasReceitas.push(response.data.filter((categoria) => categoria.nome === 'Salário')[0])
+          categoriasReceitas.push(response.data.filter((categoria) => categoria.nome === 'Serviços')[0]);
+          setCategorias(categoriasReceitas);
+        } else if (tipo === 'Despesa') {
+          setCategorias(response.data.filter((categoria) => categoria.nome !== "Salário" && categoria.nome !== "Serviços"));
+        }
+        else {
+          setCategorias([]);
         }
         setIsLoading(false)
+      } catch (error) {
+        setCategorias([]);
+        setIsLoading(false);
       }
-      getData()
-    }, [novaTransacao])
-
-  } catch (error) {
-    const { status } = error.response;
-
-    if (status === 401) {
-
-      dispatch(actionsAuth.loginFailure());
-      Swal.fire({
-        icon: 'error',
-        title: 'Sessão expirada!',
-        text: 'Seu login expirou, faça login novamente para acessar sua conta.'
-      });
-      history.go('/login'); // Redirect to login page
     }
-  }
+    getData();
+  }, [novaTransacao, tipo])
 
   if (!conta) {
     return
@@ -202,8 +208,8 @@ export default function Transacao() {
         data,
         tipo,
         descricao,
-        user_id: user_id,
-        conta_id: conta_id,
+        user_id,
+        conta_id,
         valor: parseFloat(valor),
         categoria_id,
       })
@@ -305,13 +311,15 @@ export default function Transacao() {
             <label className="label">
               Categoria:
               <p className="control has-icons-left">
-                <select className="input select"  onChange={(e) => setCategoria_id(Number(e.target.value))}>
+                <select className="input select" onChange={(e) => setCategoria_id(Number(e.target.value))}>
                   <option value="0">Selecione uma categoria</option>
                   {categorias.map((categoria) => (
                     <option key={categoria.id} value={categoria.id}>{categoria.nome}</option>
                   ))}
                 </select>
-                <span className="icon icon-categoria is-large is-left">{categoria_id > 0 ? (<i className={categorias.filter(categoria => categoria.id === categoria_id)[0].icone} />) : ""}</span>
+                {categorias.length > 0 ? (
+                  <span className="icon icon-categoria is-large is-left">{categoria_id > 0 ? (<i className={categorias.filter(categoria => categoria.id === categoria_id)[0].icone} />) : ""}</span>
+                ) : ""}
               </p>
             </label>
 
@@ -319,7 +327,7 @@ export default function Transacao() {
               Descrição:
               <p className="control has-icons-left">
                 <input type="text" className="input descricao" onChange={(e) => setDescricao(e.target.value)} value={descricao} />
-                <span className="icon is-large is-left"><i className="bx bx-message-square" /></span>
+                <span className="icon is-large is-left"><i className="bx bx-label" /></span>
               </p>
 
             </label>

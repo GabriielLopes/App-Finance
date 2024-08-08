@@ -231,7 +231,7 @@ export default function EditMetasFinanceiras() {
                 Nome do objetivo:
                 <p className="control has-icons-left">
                   <input type="text" name="descricao" className="input descricao" placeholder="Ex: Casa, Carro e etc..." value={descricao} onChange={(e) => validaDescricao(e)} />
-                  <span className="icon is-large is-left"><i className='bx bx-message-square' /></span>
+                  <span className="icon is-large is-left"><i className='bx bx-label' /></span>
                 </p>
                 <div className="content is-small">
                   <p className="info-erro erro-descricao" />

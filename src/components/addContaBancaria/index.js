@@ -276,7 +276,7 @@ export default function AddContaBancaria() {
                         value={agencia}
                         onChange={validaAgencia}
                       />
-                      <span className="icon is-large is-left"><i className='bx bx-message-square' /></span>
+                      <span className="icon is-large is-left"><i className='bx bx-label' /></span>
                     </p>
                     <div className="content is-small">
                       <p className="info-erro erro-agencia" />
@@ -292,7 +292,7 @@ export default function AddContaBancaria() {
                         value={conta}
                         onChange={validaConta}
                       />
-                      <span className="icon is-large is-left"><i className='bx bx-message-square' /></span>
+                      <span className="icon is-large is-left"><i className='bx bx-label' /></span>
                     </p>
                     <div className="content is-small">
                       <p className="info-erro erro-conta" />

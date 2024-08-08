@@ -217,7 +217,7 @@ export default function DespesasFixasConfig() {
                 Descrição:
                 <p className="control has-icons-left">
                   <input type='text' className='input descricao' placeholder='EX: "Celular Samsung"' id="nome" value={nome} onChange={(e) => setNome(e.target.value)} />
-                  <span className="icon is-large is-left"><i className='bx bx-message-square' /></span>
+                  <span className="icon is-large is-left"><i className='bx bx-label' /></span>
                 </p>
               </label>
             </div>
