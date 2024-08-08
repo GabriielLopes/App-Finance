@@ -80,7 +80,7 @@ export default function EditMetasFinanceiras() {
   useEffect(() => {
     async function getData() {
       const response = await axios.get('/categorias/');
-      setCategorias(response.data)
+      setCategorias(response.data.filter(categoria => categoria.nome !== "Salário" && categoria.nome !== "Serviços"))
     }
     getData()
   }, [])

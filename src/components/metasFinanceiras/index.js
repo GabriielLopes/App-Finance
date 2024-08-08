@@ -186,7 +186,9 @@ export default function MetasFinanceiras() {
                 <div className="box">
                   <div className="grid">
                     <div className="col">
-                      <h4 className="title"><i className={categorias.filter(categoria => categoria.id === parseFloat(metaFinanceira.categoria_id))[0].icone} /> {metaFinanceira.descricao}</h4>
+                      {categorias.length > 0 && metaFinanceira.categoria_id > 0 ? (
+                        <h4 className="title"><i className={categorias.filter(categoria => categoria.id === parseFloat(metaFinanceira.categoria_id))[0].icone} /> {metaFinanceira.descricao}</h4>
+                      ) : ""}
                     </div>
 
                     <div className="col">
