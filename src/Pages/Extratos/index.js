@@ -24,7 +24,7 @@ export default function Extratos() {
   const [descricao, setDescricao] = useState('');
   const [minPagina, setMinPagina] = useState(0);
   const [maxPagina, setMaxPagina] = useState(10);
-  const [qtdePagina, setQtdePagina] = useState(0)
+  const [qtdePagina, setQtdePagina] = useState(1)
   const [verPorPagina, setVerPorPagina] = useState(10);
   const [paginaAtual, setPaginaAtual] = useState(1);
   const [filtroSelecionado, setFiltroSelecionado] = useState('');
@@ -144,7 +144,7 @@ export default function Extratos() {
       }
     }
     getData();
-  }, [conta, mes, verPorPagina])
+  }, [conta, mes, verPorPagina, qtdePagina])
 
   function setMesAnterior() {
     if (mes <= 1) return
