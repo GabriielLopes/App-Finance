@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import { NumericFormat } from 'react-number-format';
 import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
-import { Carousel } from "react-responsive-carousel";
+
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 
 import Loading from '../Loading/index';
@@ -23,12 +23,6 @@ export default function AddContaBancaria() {
   const [conta, setConta] = useState('');
   const [tipo, setTipo] = useState('');
   const [saldo, setSaldo] = useState(0);
-  const images = [[
-    'https://api-finance-zeta.vercel.app/images/imagem_1.png'],
-  ['https://api-finance-zeta.vercel.app/images/imagem_2.png'],
-  ['https://api-finance-zeta.vercel.app/images/imagem_3.png']
-  ];
-
 
   function validaBanco(e) {
     setBanco(e.target.value);
@@ -191,36 +185,17 @@ export default function AddContaBancaria() {
         <div className="col">
           <div className="notification is-primary">
             <div className="content is-medium">
-              <p>Seja bem vindo(a) <strong>{user.nome}!!</strong> <br />
-                Veja abaixo algumas das funcionalidades do aplicativo <strong>App Finance.</strong> <br />
-                <i className='bx bx-down-arrow-alt' />
-              </p>
+              <center>
+                <p>Seja bem vindo(a) <strong>{user.nome}!!</strong> <br />
+                Cadastre já sua conta bancária e desfrute de nossos benefícios
+                </p>
+              </center>
             </div>
-
           </div>
         </div>
-
       </div>
 
       <div className="grid">
-
-        <div className="col">
-          <center>
-            <Carousel autoPlay interval={3000} width="80%" showArrows infiniteLoop>
-              <div>
-                <img src={images[0]} alt="imagem-sistema" />
-              </div>
-
-              <div>
-                <img src={images[1]} alt="imagem-sistema" />
-              </div>
-
-              <div>
-                <img src={images[2]} alt="imagem-sistema" />
-              </div>
-            </Carousel>
-          </center>
-        </div>
 
         <div className="col">
           <div className="notification">
@@ -243,118 +218,102 @@ export default function AddContaBancaria() {
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="grid">
-
-        <div className="col">
-          <div className="box">
-            <form onSubmit={handleSubmit}>
-              <h1 className="title">Cadastro de conta bancária <i className='bx bxs-bank' /></h1>
-              <div className="grid">
-                <div className="col">
-                  <label className='label' htmlFor="banco">Nome da instituição financeira:
-                    <p className="control has-icons-left">
-                      <input type='text' className='input valor' name="banco" value={banco} placeholder='Ex: "Itau, Bradesco, Banco do Brasil e etc..."'
-                        onChange={validaBanco}
-                      />
-                      <span className="icon is-left"><i className='bx bxs-bank' /></span>
-                    </p>
-                    <div className="content is-small">
-                      <p className="info-erro erro-banco" />
-                    </div>
-                  </label>
-                </div>
+        <div className="box">
+          <form onSubmit={handleSubmit}>
+            <h1 className="title">Cadastro de conta bancária <i className='bx bxs-bank' /></h1>
+            <div className="grid">
+              <div className="col">
+                <label className='label' htmlFor="banco">Nome da instituição financeira:
+                  <p className="control has-icons-left">
+                    <input type='text' className='input valor' name="banco" value={banco} placeholder='Ex: "Itau, Bradesco, Banco do Brasil e etc..."'
+                      onChange={validaBanco}
+                    />
+                    <span className="icon is-left"><i className='bx bxs-bank' /></span>
+                  </p>
+                  <div className="content is-small">
+                    <p className="info-erro erro-banco" />
+                  </div>
+                </label>
               </div>
-
-              <div className="grid">
-                <div className="col">
-                  <label className='label' htmlFor="agencia">
-                    Agência:
-                    <p className="control has-icons-left">
-                      <input type='text' className='input valor' name="agencia" placeholder='Ex: 101081'
-                        value={agencia}
-                        onChange={validaAgencia}
-                      />
-                      <span className="icon is-large is-left"><i className='bx bx-label' /></span>
-                    </p>
-                    <div className="content is-small">
-                      <p className="info-erro erro-agencia" />
-                    </div>
-                  </label>
-                </div>
-
-                <div className="col">
-                  <label className='label' htmlFor="conta">
-                    Número da conta:
-                    <p className="control has-icons-left">
-                      <input type='text' className='input valor' name="conta" placeholder='EX: 1010102'
-                        value={conta}
-                        onChange={validaConta}
-                      />
-                      <span className="icon is-large is-left"><i className='bx bx-label' /></span>
-                    </p>
-                    <div className="content is-small">
-                      <p className="info-erro erro-conta" />
-                    </div>
-                  </label>
-
-                </div>
-              </div>
-
-              <div className="grid">
-                <div className="col">
-                  <label className='label' htmlFor="tipo">
-                    Tipo: <br />
-                    <div className='select'>
-                      <select className='select' name="tipo" onChange={(e) => setTipo(e.target.value)}>
-                        <option value="Conta Corrente">Conta Corrente</option>
-                        <option value="Conta Poupança">Conta Poupança</option>
-                      </select>
-                    </div>
-                  </label>
-                </div>
-
-                <div className="col">
-                  <label className='label' htmlFor="saldo">
-                    Saldo atual:
-
-                    <p className="control has-icons-left">
-                      <NumericFormat
-                        className="input valor"
-                        name="saldo"
-                        value={saldo}
-                        thousandSeparator="."
-                        decimalSeparator=","
-                        decimalScale={2}
-                        fixedDecimalScale={2}
-                        placeholder='Ex: R$ 125,00'
-                        allowNegative={false}
-                        onFocus={(e) => e.target.select()}
-                        onValueChange={(e) => setSaldo(e.floatValue)}
-                      />
-                      <span className="icon is-large is-left"><p className="bx">R$</p></span>
-                    </p>
-                  </label>
-                </div>
-              </div>
-
-              <button type='submit' className='button is-link is-left'>Cadastar</button>
-            </form>
-
-          </div>
-        </div>
-
-        <div className="col">
-          <div className="notification is-success">
-            <div className="content is-medium">
-              <p>Cadastre já a sua conta bancária e aproveite os benefícios do <strong>App Finance</strong>!</p> <br />
-              <center><i className='bx bx-left-arrow-alt' /></center>
-              <br />
-
             </div>
-          </div>
+
+            <div className="grid">
+              <div className="col">
+                <label className='label' htmlFor="agencia">
+                  Agência:
+                  <p className="control has-icons-left">
+                    <input type='text' className='input valor' name="agencia" placeholder='Ex: 101081'
+                      value={agencia}
+                      onChange={validaAgencia}
+                    />
+                    <span className="icon is-large is-left"><i className='bx bxs-bank' /></span>
+                  </p>
+                  <div className="content is-small">
+                    <p className="info-erro erro-agencia" />
+                  </div>
+                </label>
+              </div>
+
+              <div className="col">
+                <label className='label' htmlFor="conta">
+                  Número da conta:
+                  <p className="control has-icons-left">
+                    <input type='text' className='input valor' name="conta" placeholder='EX: 1010102'
+                      value={conta}
+                      onChange={validaConta}
+                    />
+                    <span className="icon is-large is-left"><i className='bx bxs-bank' /></span>
+                  </p>
+                  <div className="content is-small">
+                    <p className="info-erro erro-conta" />
+                  </div>
+                </label>
+
+              </div>
+            </div>
+
+            <div className="grid">
+              <div className="col">
+                <label className='label' htmlFor="tipo">
+                  Tipo: <br />
+                  <div className='select'>
+                    <select className='input select' name="tipo" onChange={(e) => setTipo(e.target.value)}>
+                      <option value="Conta Corrente">Conta Corrente</option>
+                      <option value="Conta Poupança">Conta Poupança</option>
+                    </select>
+                  </div>
+                </label>
+              </div>
+
+              <div className="col">
+                <label className='label' htmlFor="saldo">
+                  Saldo atual:
+
+                  <p className="control has-icons-left">
+                    <NumericFormat
+                      className="input valor"
+                      name="saldo"
+                      value={saldo}
+                      thousandSeparator="."
+                      decimalSeparator=","
+                      decimalScale={2}
+                      fixedDecimalScale={2}
+                      placeholder='Ex: R$ 125,00'
+                      allowNegative={false}
+                      onFocus={(e) => e.target.select()}
+                      onValueChange={(e) => setSaldo(e.floatValue)}
+                    />
+                    <span className="icon is-large is-left"><p className="bx">R$</p></span>
+                  </p>
+                </label>
+              </div>
+            </div>
+
+            <button type='submit' className='button is-link is-left'>Cadastar</button>
+          </form>
         </div>
+
       </div>
 
       <div className="grid">
