@@ -70,6 +70,7 @@
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@types/history": "^5.0.0",
     "babel-eslint": "^10.1.0",
+    "es5-shim": "^4.6.7",
     "eslint": "^8.57.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-prettier": "^9.1.0",

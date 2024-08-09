@@ -146,6 +146,20 @@ export default function Extratos() {
     getData();
   }, [conta, mes, verPorPagina, qtdePagina])
 
+  // filtrar transacoes
+  useEffect(() => {
+    async function getData() {
+      try {
+        const response = await axios.get(`/transacoes/find/${conta.id}/${descricao}`)
+        setTransacoes(response.data)
+        setFiltroSelecionado(descricao);
+      } catch (error) {
+        setTransacoes(transacoesBase);
+      }
+    }
+    getData();
+  }, [conta, mes, verPorPagina, qtdePagina, descricao])
+
   function setMesAnterior() {
     if (mes <= 1) return
     setMes(mes - 1)
@@ -192,24 +206,7 @@ export default function Extratos() {
     currency: 'BRL',
   })
 
-  function filtro(e) {
-    e.preventDefault();
-    function removerAcentos(str) {
-      return str.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
-    }
-    const descricaoCorrigida = removerAcentos(descricao);
-    const regex = new RegExp(`\\b${descricaoCorrigida}\\b`, "gi");
-    if (descricao === '' || descricao.length <= 0) {
-      setTransacoes(transacoesBase);
-      setFiltroSelecionado('')
-    } else {
-      setFiltroSelecionado(e.target.descricao.value);
-      const transacoesFiltradas = transacoesBase.filter((transacao) => regex.test(removerAcentos(transacao.descricao)))
-      setDescricao('');
-      setTransacoes(transacoesFiltradas)
 
-    }
-  }
 
   function handleChangeTipo(e) {
     setFiltroTipo(e.target.value);
@@ -227,6 +224,7 @@ export default function Extratos() {
   function cancelarFiltro() {
     setTransacoes(transacoesBase);
     setFiltroSelecionado('');
+    setDescricao('');
     setMes(new Date().getUTCMonth() + 1);
   }
 
@@ -300,7 +298,7 @@ export default function Extratos() {
 
                 <div className="grid">
                   <div className="col div_pesquisa">
-                    <form onSubmit={filtro}>
+                    <form onSubmit={(e) => e.preventDefault()}>
                       <p className="control has-icons-left">
                         <input type="text" className="input descricao" name="descricao" value={descricao} onChange={(e) => setDescricao(e.target.value)} placeholder="Filtre pela descrição" />
                         <span className="icon is-large is-left"><i className="bx bx-filter" /></span>
@@ -384,7 +382,7 @@ export default function Extratos() {
                             {categorias.filter(categoria => categoria.id === parseFloat(transacao.categoria_id))[0].nome}
                           </td>
                           <td><strong>{formatarValor.format(transacao.valor)}</strong></td>
-                          <td>{formatarData.format(new Date(`${new Date(transacao.data).getUTCFullYear()}-${new Date(transacao.data).getUTCMonth() +1 }-${new Date(transacao.data).getUTCDate()}`))}</td>
+                          <td>{formatarData.format(new Date(`${new Date(transacao.data).getUTCFullYear()}-${new Date(transacao.data).getUTCMonth() + 1}-${new Date(transacao.data).getUTCDate()}`))}</td>
                           <td>
                             <button type="button" className="button" onClick={() => handleDelete(transacao.id)}><i className="bx bxs-trash" /></button>
                           </td>
