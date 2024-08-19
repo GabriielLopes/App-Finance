@@ -370,7 +370,7 @@ export default function ContasAPagar() {
                       <th>{formatarValor.format(despesa.valor_parcela)}</th>
                       <th>{formatarValor.format(despesa.valor)}</th>
                       <th>{despesa.qtde_parcelas_pagas} de {despesa.qtde_parcelas}</th>
-                      <td>{formatarData.format(new Date(`${new Date(despesa.data_venc).getFullYear()}-${new Date(despesa.data_venc).getMonth() + 1}-${new Date(despesa.data_venc).getDate() + 1}`))}</td>
+                      <td>{formatarData.format(new Date(`${new Date(despesa.data_venc).getUTCFullYear()}-${new Date(despesa.data_venc).getUTCMonth() + 1}-${new Date(despesa.data_venc).getUTCDate() + 1}`))}</td>
                       <td>{formatarData.format(new Date(despesa.data_compra))}</td>
                       <td>{conta.banco}</td>
                       <td>
