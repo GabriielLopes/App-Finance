@@ -1,0 +1,62 @@
+.divCadastroCartao {
+  display: flex;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.4);
+  bottom: 0;
+  opacity: 0;
+  transition: all 0.7s ease-in-out;
+}
+
+.divCadastroCartao .box {
+  display: block;
+  position: absolute;
+  top: -1000px;
+  width: 850px;
+  height: auto;
+  transition: all 0.7s ease-in-out;
+}
+
+.divCadastroCartao.active {
+  z-index: 12;
+  opacity: 1;
+  overflow: scroll;
+}
+
+.divCadastroCartao.active .box {
+  top: 0;
+}
+
+.divCadastroCartao .input.select {
+  width: 25%;
+}
+
+.divCadastroCartao .icon {
+  font-size: 25px;
+}
+
+.divCadastroCartao button .bx {
+  font-size: 23px;
+}
+
+@media (max-width: 800px) {
+  .divCadastroCartao .box {
+    width: auto;
+    display: block;
+  }
+
+  .divCadastroCartao input {
+    width: auto;
+  }
+
+  .divCadastroCartao .grid {
+    grid-template-columns: 1fr;
+  }
+}

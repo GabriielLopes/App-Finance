@@ -1,12 +1,15 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import './style.css';
 import axios from '../../services/axios';
 import Footer from '../../components/Footer/index';
+import CadastrarCartao from "../../components/cadastrarCartao";
+import * as actionsCartoes from '../../store/modules/cartoes/actions';
 
 export default function Cartoes() {
+  const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
   const [cartoes, setCartoes] = useState([]);
 
@@ -37,6 +40,7 @@ export default function Cartoes() {
 
   return (
     <div className="pages_content page_cartoes">
+      <CadastrarCartao />
       <h1 className="title">Cartões de crédito e débito</h1>
 
       <div className="grid">
@@ -303,7 +307,7 @@ export default function Cartoes() {
         <div className="col">
           <div className="addCartao">
             <center>
-              <button type="button" className="button">
+              <button type="button" className="button" onClick={() => dispatch(actionsCartoes.novoCartaoRequest())}>
                 <i className='bx bx-plus' /> <p>Cadastrar novo cartão</p>
               </button>
             </center>

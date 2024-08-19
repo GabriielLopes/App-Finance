@@ -8,6 +8,7 @@ import despesa from './despesa/reducer'
 import editMetasFin from './editMetasFin/reducer';
 import planejamentosMensais from './planejamentosMensais/reducer';
 import configuracoes from './configuracoes/reducer';
+import cartoes from './cartoes/reducer';
 
 // Combina os reducers em um único reducer raiz
 export default combineReducers({
@@ -16,5 +17,6 @@ export default combineReducers({
   despesa,
   editMetasFin,
   planejamentosMensais,
-  configuracoes
+  configuracoes,
+  cartoes
 });
