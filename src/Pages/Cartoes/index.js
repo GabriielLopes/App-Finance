@@ -37,12 +37,17 @@ export default function Cartoes() {
     getData();
   }, [])
 
-
   return (
     <div className="pages_content page_cartoes">
       <CadastrarCartao />
       <h1 className="title">Cartões de crédito e débito</h1>
-
+      <div className="notification is-info">
+        <i className="bx bx-info-circle" />
+        <br />
+        <div className="content is-normal">
+          <p>Aqui estão todos os seus cartões cadastrados.</p>
+        </div>
+      </div>
       <div className="grid">
         {cartoes.slice(0, 2).map((cartao) => (
           <>
