@@ -209,7 +209,7 @@ body {
 }
 
 .profile #log_out{
-  position: absolute;
+  position: relative;
   left: 50%;
   bottom: 5px;
   transform: translateX(-50%);
