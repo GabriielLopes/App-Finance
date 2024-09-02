@@ -154,3 +154,9 @@
 .divAddPlanejamentoMensal .bx-tired {
   font-size: 80px;
 }
+
+@media (max-width: 800px) {
+  .divAddPlanejamentoMensal .box {
+    width: auto;
+  }
+}

@@ -132,3 +132,9 @@
 .box-transacao .select {
   width: 50%;
 }
+
+@media (max-width: 800px) {
+  .box-transacao {
+    width: auto;
+  }
+}

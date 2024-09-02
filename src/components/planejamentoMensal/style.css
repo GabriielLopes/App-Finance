@@ -39,3 +39,9 @@
   padding: 0;
   left: 0;
 }
+
+@media (max-width: 800px) {
+  .box-planejamentoMensal {
+    width: auto;
+  }
+}

@@ -77,7 +77,9 @@ export default function GraficoCategoriaReceita({ mes, transacoes, categorias })
 
   if (totalReceitas === 0) {
     return (
-      <p>Faça movimentações para visualizar o gráfico corretamente.</p>
+      <center>
+        <p>Ainda não há nenhuma receita</p>
+      </center>
     )
   }
 
@@ -86,7 +88,6 @@ export default function GraficoCategoriaReceita({ mes, transacoes, categorias })
     <div className="col">
       <div className="grid">
         <div className="col">
-          RECEITAS POR CATEGORIA
           <center>
             <Chart
               chartType="PieChart"

@@ -34,3 +34,17 @@ progress {
   opacity: 1;
   top: 40px;
 }
+
+.responsive-grid {
+  width: 100%;
+  overflow: hidden;
+  overflow-x: auto;
+}
+
+.grade {
+  display: flex;
+}
+
+.colunas {
+  min-width: 650px;
+}

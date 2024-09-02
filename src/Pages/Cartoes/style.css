@@ -29,7 +29,7 @@
 }
 
 .page_cartoes .notification {
-  width: 450px;
+  width: auto;
 }
 
 @media (max-width: 800px) {

@@ -273,11 +273,11 @@ export default function Transacao() {
 
       ) : (
         <form onSubmit={handleSubmit}>
-
+          <div className="grid">
           <div className="box box-transacao">
             <h1 className="title titulo-transacao">Nova transação</h1>
             <hr className="hr" />
-            <div className="col-sm my-3">
+            <div className="col my-3">
               <p className="control has-icons-left has-icons-right">
                 <NumericFormat
                   value={valor}
@@ -340,6 +340,7 @@ export default function Transacao() {
                 <button className="button is-danger" type="button" onClick={cancelarTransacao} ><i className='bx bx-x' /> Cancelar</button>
               </div>
             </div>
+          </div>
           </div>
         </form>
       )

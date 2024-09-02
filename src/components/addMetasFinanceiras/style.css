@@ -74,3 +74,9 @@
   width: 180px;
   border-radius: 13px;
 }
+
+@media (max-width: 800px) {
+  .addMetasFinanceiras .box {
+    width: auto;
+  }
+}

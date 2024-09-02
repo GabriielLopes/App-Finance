@@ -45,7 +45,7 @@ export default function Cartoes() {
         <i className="bx bx-info-circle" />
         <br />
         <div className="content is-normal">
-          <p>Aqui estão todos os seus cartões cadastrados.</p>
+          <p>Aqui estão todos os cartões cadastrados.</p>
         </div>
       </div>
       <div className="grid">

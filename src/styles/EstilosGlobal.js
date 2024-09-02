@@ -36,6 +36,13 @@ export const EstilosGlobal = createGlobalStyle`
     left: 250px
   }
 
+  @media (max-width: 800px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+
 `;
 
 export const Container = styled.div`

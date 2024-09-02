@@ -351,7 +351,7 @@ export default function Home() {
           <div className="col">
             {verGrafDespesa ? (
               <div className='box'>
-                DESPESAS POR CATEGORIA
+                DESPESAS POR CATEGORIAS
                 <GraficoCategoriaDespesa mes={mes} transacoes={transacoes} categorias={categorias} />
               </div>
             ) : ""}
@@ -359,6 +359,7 @@ export default function Home() {
           <div className='col'>
             {verGrafReceita ? (
               <div className='box'>
+                RECEITAS POR CATEGORIAS
                 <GraficoCategoriaReceita mes={mes} transacoes={transacoes} categorias={categorias} />
               </div>
             ) : ("")}

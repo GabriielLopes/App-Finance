@@ -172,7 +172,7 @@ export default function MetasFinanceiras() {
           </p>
         </div>
       </div>
-      <div className="grid">
+      <div className="grid grid-objetivos">
         {metasFinanceiras.length <= 0 ? (
 
           <center>
@@ -180,9 +180,10 @@ export default function MetasFinanceiras() {
           </center>
 
         ) : (
-          <>
+          <div className="responsive-grid">
+            <div className="grade">
             {metasFinanceiras.map((metaFinanceira) => (
-              <div className="col">
+              <div className="colunas">
                 <div className="box">
                   <div className="grid">
                     <div className="col">
@@ -227,7 +228,9 @@ export default function MetasFinanceiras() {
                 </div>
               </div>
             ))}
-          </>
+
+            </div>
+          </div>
 
         )}
       </div>
