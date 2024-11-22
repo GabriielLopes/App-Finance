@@ -180,14 +180,13 @@ export default function AddContaBancaria() {
   return (
     <div className="pages_content">
       <Loading isLoading={isLoading} />
-      <h1 className="title">Boas vindas!!</h1>
       <div className="grid">
         <div className="col">
           <div className="notification is-primary">
             <div className="content is-medium">
               <center>
                 <p>Seja bem vindo(a) <strong>{user.nome}!!</strong> <br />
-                Cadastre já sua conta bancária e desfrute de nossos benefícios
+                  Cadastre já sua conta bancária e desfrute de nossos benefícios
                 </p>
               </center>
             </div>
@@ -222,6 +221,17 @@ export default function AddContaBancaria() {
         <div className="box">
           <form onSubmit={handleSubmit}>
             <h1 className="title">Cadastro de conta bancária <i className='bx bxs-bank' /></h1>
+            <div className="notification is-info">
+              <small>
+                <strong>
+                  * lembrando que você poderá utilizar informações fictícias da conta bancária,
+                  para conseguir utilizar o nosso app.
+                </strong>
+
+                <br />
+                <br />
+              </small>
+            </div>
             <div className="grid">
               <div className="col">
                 <label className='label' htmlFor="banco">Nome da instituição financeira:
